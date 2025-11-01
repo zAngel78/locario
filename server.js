@@ -4,7 +4,7 @@ const path = require('path');
 const cors = require('cors');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Backend URL
 const BACKEND_URL = 'https://nomassi-1.onrender.com';
@@ -85,9 +85,9 @@ app.get('/api/*', async (req, res) => {
     }
 });
 
-// Root route - redirect to dashboard
+// Root route - redirect to login
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'elegant-bento.html'));
+    res.sendFile(path.join(__dirname, 'login.html'));
 });
 
 // Start server
