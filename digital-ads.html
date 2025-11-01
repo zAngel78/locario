@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authentication Guard - Must be first! -->
+    <script src="auth.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Ads — YU Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Global Styles & Theme System -->
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* Page-specific styles */
+        .ios-container,
+        .ad-card {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Research Cards Styles */
+        .research-card {
+            background: var(--ios-card);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            grid-column: span 4;
+        }
+
+        .research-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .research-card-header {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid var(--ios-separator);
+        }
+
+        .platform-icon-lg {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .platform-icon-lg svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .platform-info h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .platform-info p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .research-card-body {
+            padding: 20px 24px;
+        }
+
+        .research-link-item {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .research-link-item:hover {
+            background: var(--bg-tertiary);
+            transform: translateX(4px);
+        }
+
+        .research-link-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .link-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-right: 12px;
+        }
+
+        .link-badge.page {
+            background: #007aff;
+            color: white;
+        }
+
+        .link-badge.search {
+            background: #34c759;
+            color: white;
+        }
+
+        .link-desc {
+            flex: 1;
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .link-btn {
+            background: var(--ios-blue);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .link-btn:hover {
+            background: #0051d5;
+            transform: scale(1.05);
+        }
+
+        .link-btn svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Bento Grid Layout */
+        .ads-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* Ad Card Base */
+        .ad-card {
+            background: var(--ios-card);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            grid-column: span 4;
+        }
+
+        .ad-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+            z-index: 1;
+        }
+
+        .ad-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.12),
+                0 0 0 1px rgba(0, 122, 255, 0.1);
+        }
+
+        .ad-card:hover::before {
+            left: 100%;
+        }
+
+        .ad-card:active {
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        /* Ad Media */
+        .ad-media {
+            width: 100%;
+            height: 280px;
+            background: var(--bg-tertiary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ad-media img,
+        .ad-media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .ad-media-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-primary) 100%);
+        }
+
+        .ad-media-placeholder svg {
+            width: 64px;
+            height: 64px;
+            color: var(--text-tertiary);
+            opacity: 0.3;
+        }
+
+        .media-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 50%, rgba(0,0,0,0.6) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .ad-card:hover .media-overlay {
+            opacity: 1;
+        }
+
+        .ad-status-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            backdrop-filter: blur(20px);
+            z-index: 2;
+        }
+
+        .ad-status-badge.active {
+            background: rgba(52, 199, 89, 0.95);
+            color: white;
+            box-shadow: 0 4px 12px rgba(52, 199, 89, 0.4);
+        }
+
+        .ad-status-badge.inactive {
+            background: rgba(142, 142, 147, 0.95);
+            color: white;
+        }
+
+        .video-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            z-index: 2;
+        }
+
+        .video-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Ad Content */
+        .ad-content {
+            padding: 24px;
+        }
+
+        .ad-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ad-body {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ad-platforms {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .platform-tag {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .platform-tag svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .platform-tag.facebook {
+            background: rgba(24, 119, 242, 0.12);
+            color: #1877F2;
+        }
+
+        .platform-tag.instagram {
+            background: linear-gradient(45deg, rgba(225, 48, 108, 0.12), rgba(193, 53, 132, 0.12));
+            color: #E1306C;
+        }
+
+        /* Metrics Section */
+        .ad-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-radius: 14px;
+            margin-bottom: 16px;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            letter-spacing: -0.3px;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .ad-dates {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .date-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .date-item svg {
+            width: 14px;
+            height: 14px;
+            color: var(--ios-blue);
+        }
+
+        /* Stats Overview Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            grid-column: span 3;
+            background: var(--ios-card);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 120px;
+            opacity: 0.05;
+            border-radius: 50%;
+            filter: blur(50px);
+            transition: all 0.4s;
+        }
+
+        .stat-card.blue::after { background: var(--ios-blue); }
+        .stat-card.green::after { background: var(--ios-green); }
+        .stat-card.orange::after { background: var(--ios-orange); }
+        .stat-card.purple::after { background: var(--ios-purple); }
+
+        .stat-card:hover::after {
+            opacity: 0.15;
+            transform: scale(1.5);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .stat-card.blue .stat-icon { background: linear-gradient(135deg, #1877F2 0%, #4267B2 100%); }
+        .stat-card.green .stat-icon { background: linear-gradient(135deg, var(--ios-green) 0%, var(--ios-teal) 100%); }
+        .stat-card.orange .stat-icon { background: linear-gradient(135deg, var(--ios-orange) 0%, var(--ios-pink) 100%); }
+        .stat-card.purple .stat-icon { background: linear-gradient(135deg, var(--ios-purple) 0%, var(--ios-pink) 100%); }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            letter-spacing: -1px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Filter Pills */
+        .filter-pills {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .filter-pill.active {
+            background: var(--ios-blue);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+
+        .filter-pill:hover:not(.active) {
+            transform: scale(1.05);
+            background: var(--bg-secondary);
+        }
+
+        /* Modal */
+        .ad-modal {
+            position: fixed;
+            inset: 0;
+            background: var(--overlay);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .ad-modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .ad-modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 0.5px solid var(--separator);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background: var(--bg-tertiary);
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--ios-red);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .ad-card { grid-column: span 6; }
+            .stat-card { grid-column: span 6; }
+        }
+
+        
+        /* Bottom Navigation Bar - Mobile Only */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: var(--glass-bg-solid);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-top: 0.33px solid var(--ios-separator);
+            z-index: 100;
+            display: none;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .bottom-nav-content {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            flex: 1;
+            height: 100%;
+            text-decoration: none;
+            color: var(--ios-secondary);
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--ios-blue);
+        }
+
+        .bottom-nav-item svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .bottom-nav-item span {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: -0.08px;
+        }
+
+        @media (max-width: 768px) {
+            .ad-card { grid-column: span 12; }
+            .stat-card { grid-column: span 12; }
+            .ad-media { height: 240px; }
+            
+            /* Show bottom nav on mobile */
+            .bottom-nav {
+                display: block;
+            }
+            
+            /* Adjust container padding for mobile */
+            .ios-container {
+                padding-bottom: 88px;
+            }
+        }
+
+        
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside class="ios-sidebar" id="ios-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+                        <path d="M16 8L10 12L16 16L22 12L16 8Z" stroke="white" stroke-width="1.5"/>
+                        <path d="M10 20L16 24L22 20" stroke="white" stroke-width="1.5"/>
+                        <path d="M10 16L16 20L22 16" stroke="white" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Yeshiva University</h1>
+                    <p>Research Intelligence</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-label">Overview</div>
+                <a href="elegant-bento.html" class="sidebar-nav-item">Dashboard</a>
+                <a href="analytics.html" class="sidebar-nav-item">Analytics</a>
+            </div>
+
+            <div class="nav-section">
+                
+            <div class="nav-section">
+                <div class="nav-section-label">Communications</div>
+                <a href="internal-comms.html" class="sidebar-nav-item">Internal Comms</a>
+                <a href="audience-segmentation.html" class="sidebar-nav-item">Audience</a>
+                <a href="channels-management.html" class="sidebar-nav-item">Channels</a>
+                <a href="moderation.html" class="sidebar-nav-item">Moderation</a>
+                <a href="compliance-visual.html" class="sidebar-nav-item">Compliance</a>
+                <a href="feedback.html" class="sidebar-nav-item">Feedback</a>
+                <a href="insights.html" class="sidebar-nav-item">Insights</a>
+            </div>
+
+            <div class="nav-section-label">Channels</div>
+                <a href="social-posts.html" class="sidebar-nav-item">
+                    <span>Social Media</span>
+                    <div class="nav-item-badge" id="social-badge">0</div>
+                </a>
+                <a href="email-marketing.html" class="sidebar-nav-item">
+                    <span>Email Marketing</span>
+                    <div class="nav-item-badge">8</div>
+                </a>
+                <a href="digital-ads.html" class="sidebar-nav-item active">
+                    <span>Digital Ads</span>
+                    <div class="nav-item-badge">19</div>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-label">Research</div>
+                <a href="universities.html" class="sidebar-nav-item">Universities</a>
+                <a href="research-files.html" class="sidebar-nav-item">Files</a>
+                <a href="reports.html" class="sidebar-nav-item">Reports</a>
+                <a href="settings.html" class="sidebar-nav-item">Settings</a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-status">
+                <div class="status-dot"></div>
+                <div class="status-text">Connected</div>
+            </div>
+            <button class="btn-export">Export Data</button>
+        </div>
+    </aside>
+
+    <nav class="ios-nav">
+        <div class="ios-nav-content">
+            <div class="ios-nav-top">
+                <button class="nav-icon-btn" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <!-- Dark Mode Toggle -->
+                    <div class="theme-toggle" id="themeToggle" onclick="ThemeManager.toggleTheme()">
+                        <div class="theme-toggle-slider">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="5"/>
+                                <line x1="12" y1="1" x2="12" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="23"/>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                <line x1="1" y1="12" x2="3" y2="12"/>
+                                <line x1="21" y1="12" x2="23" y2="12"/>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h1 class="ios-large-title">Digital Ads</h1>
+        </div>
+    </nav>
+
+    <main class="ios-container">
+        <!-- Stats Overview -->
+        <div class="stats-row">
+            <div class="stat-card blue">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+                        <line x1="7" y1="2" x2="7" y2="22"/>
+                        <line x1="17" y1="2" x2="17" y2="22"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                    </svg>
+                </div>
+                <div class="stat-value" id="totalAds">0</div>
+                <div class="stat-label">Total Ads</div>
+            </div>
+
+            <div class="stat-card green">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                        <polyline points="17 6 23 6 23 12"/>
+                    </svg>
+                </div>
+                <div class="stat-value" id="activeAds">0</div>
+                <div class="stat-label">Active Campaigns</div>
+            </div>
+
+            <div class="stat-card orange">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                </div>
+                <div class="stat-value" id="videosCount">0</div>
+                <div class="stat-label">Video Ads</div>
+            </div>
+
+            <div class="stat-card purple">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                </div>
+                <div class="stat-value" id="imagesCount">0</div>
+                <div class="stat-label">Image Ads</div>
+            </div>
+        </div>
+
+        <!-- University Selector -->
+        <div style="margin: 40px 0 32px;">
+            <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary);">Ad Research Tools</h2>
+            <p style="font-size: 16px; color: var(--text-secondary); margin-bottom: 16px;">Access public ad libraries from Meta and Google for competitive analysis</p>
+            
+            <!-- Important Note -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 20px 24px; margin-bottom: 24px; color: white;">
+                <div style="display: flex; align-items: flex-start; gap: 16px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0; margin-top: 2px;">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <div>
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Why We Show Research Links Instead of Direct Ad Data</h4>
+                        <p style="font-size: 14px; line-height: 1.6; opacity: 0.95;">
+                            Digital ads are <strong>dynamic and constantly changing</strong> - they update in real-time, target specific audiences, and can be turned on/off at any moment. To ensure you see the most accurate and up-to-date advertising campaigns, we provide direct access to <strong>Meta Ad Library</strong> and <strong>Google Ads Transparency Center</strong>, where all active ads are displayed live. This approach gives you complete visibility into current strategies rather than showing potentially outdated static data.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+                <button class="filter-pill active" data-university="yu" onclick="selectUniversity('yu')">Yeshiva</button>
+                <button class="filter-pill" data-university="nyu" onclick="selectUniversity('nyu')">NYU</button>
+                <button class="filter-pill" data-university="brandeis" onclick="selectUniversity('brandeis')">Brandeis</button>
+                <button class="filter-pill" data-university="columbia" onclick="selectUniversity('columbia')">Columbia</button>
+                <button class="filter-pill" data-university="touro" onclick="selectUniversity('touro')">Touro</button>
+            </div>
+
+            <div id="adResearchCards" class="ads-grid" style="margin-bottom: 32px;">
+                <!-- Research cards will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <div style="height: 1px; background: var(--ios-separator); margin: 40px 0;"></div>
+
+        <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 24px; color: var(--text-primary);">Yeshiva University Active Ads</h2>
+
+        <!-- Filter Pills -->
+        <div class="filter-pills">
+            <button class="filter-pill active" data-filter="all">All Ads</button>
+            <button class="filter-pill" data-filter="active">Active</button>
+            <button class="filter-pill" data-filter="inactive">Inactive</button>
+            <button class="filter-pill" data-filter="facebook">Facebook</button>
+            <button class="filter-pill" data-filter="instagram">Instagram</button>
+            <button class="filter-pill" data-filter="video">Video Only</button>
+        </div>
+
+        <!-- Ads Grid -->
+        <div class="ads-grid" id="adsGrid">
+            <!-- Cards will be inserted here -->
+        </div>
+    </main>
+
+    <!-- Ad Detail Modal -->
+    <div class="ad-modal" id="adModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Ad Details</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Theme Toast -->
+    <div class="theme-toast" id="theme-toast"></div>
+
+    <!-- Bottom Navigation - Mobile Only -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-content">
+            <a href="elegant-bento.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="social-posts.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="5"/>
+                    <circle cx="12" cy="12" r="4"/>
+                    <circle cx="18" cy="6" r="1" fill="currentColor"/>
+                </svg>
+                <span>Social</span>
+            </a>
+
+            <a href="digital-ads.html" class="bottom-nav-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+                    <line x1="7" y1="2" x2="7" y2="22"/>
+                    <line x1="17" y1="2" x2="17" y2="22"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                </svg>
+                <span>Ads</span>
+            </a>
+
+            <a href="email-marketing.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span>Email</span>
+            </a>
+
+            <a href="research-files.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                    <polyline points="13 2 13 9 20 9"/>
+                </svg>
+                <span>Files</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        const API_BASE = 'https://nomassi-1.onrender.com';
+        let adsData = [];
+        let currentFilter = 'all';
+        let currentUniversity = 'yu';
+
+        // Meta Ads Research Data
+        const metaAdsData = {
+  "universities": {
+    "yu": {
+      "name": "Yeshiva University",
+      "facebook_page": "YeshivaUniversity",
+      "links": [
+        {
+          "type": "search",
+          "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=US&q=Yeshiva%20University&search_type=keyword_unordered",
+          "description": "All ads - Search 'Yeshiva University'"
+        },
+        {
+          "type": "search",
+          "url": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=US&q=Yeshiva%20University&search_type=keyword_unordered",
+          "description": "Active ads only - 'Yeshiva University'"
+        },
+        {
+          "type": "search",
+          "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=US&q=YU%20admissions&search_type=keyword_unordered",
+          "description": "Admissions related - 'YU admissions'"
+        }
+      ]
+    },
+    "nyu": {
+      "name": "New York University",
+      "facebook_page": "NYU",
+      "google_ads": true,
+      "links": [
+        {
+          "type": "google_search",
+          "url": "https://adstransparency.google.com/advertiser/AR13533132634431242241?region=US&topic=political",
+          "description": "Google Ads - New York University (Official)"
+        },
+        {
+          "type": "google_search",
+          "url": "https://adstransparency.google.com/?region=US",
+          "description": "Search 'New York University' on Google Ads"
+        },
+        {
+          "type": "google_search",
+          "url": "https://adstransparency.google.com/?region=US",
+          "description": "Search 'NYU admissions' on Google Ads"
+        }
+      ]
+    },
+    "brandeis": {
+      "name": "Brandeis University",
+      "facebook_page": "BrandeisUniversity",
+      "links": [
+        {
+          "type": "search",
+          "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=US&q=Brandeis%20University&search_type=keyword_unordered",
+          "description": "All ads - Search 'Brandeis University'"
+        },
+        {
+          "type": "search",
+          "url": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=US&q=Brandeis&search_type=keyword_unordered",
+          "description": "Active ads only - 'Brandeis'"
+        },
+        {
+          "type": "search",
+          "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=US&q=Brandeis%20admissions&search_type=keyword_unordered",
+          "description": "Admissions related - 'Brandeis admissions'"
+        }
+      ]
+    },
+    "columbia": {
+      "name": "Columbia University",
+      "facebook_page": "columbia",
+      "links": [
+        {
+          "type": "search",
+          "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=US&q=Columbia%20University&search_type=keyword_unordered",
+          "description": "All ads - Search 'Columbia University'"
+        },
+        {
+          "type": "search",
+          "url": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=US&q=Columbia&search_type=keyword_unordered",
+          "description": "Active ads only - 'Columbia'"
+        },
+        {
+          "type": "search",
+          "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=US&q=Columbia%20admissions&search_type=keyword_unordered",
+          "description": "Admissions related - 'Columbia admissions'"
+        }
+      ]
+    },
+    "touro": {
+      "name": "Touro University",
+      "facebook_page": "TouroCollege",
+      "links": [
+        {
+          "type": "search",
+          "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=US&q=Touro%20University&search_type=keyword_unordered",
+          "description": "All ads - Search 'Touro University'"
+        },
+        {
+          "type": "search",
+          "url": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=US&q=Touro%20College&search_type=keyword_unordered",
+          "description": "Active ads only - 'Touro College'"
+        },
+        {
+          "type": "search",
+          "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=US&q=Touro%20admissions&search_type=keyword_unordered",
+          "description": "Admissions related - 'Touro admissions'"
+        }
+      ]
+    }
+  }
+};
+
+        // Theme Manager
+        const ThemeManager = {
+            init() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            },
+
+            toggleTheme() {
+                const html = document.documentElement;
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+
+                const toast = document.getElementById('theme-toast');
+                toast.textContent = newTheme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode';
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            }
+        };
+
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('ios-sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('show');
+        }
+
+        // Select University
+        function selectUniversity(universityKey) {
+            currentUniversity = universityKey;
+            
+            // Update active button
+            const buttons = document.querySelectorAll('[data-university]');
+            buttons.forEach(btn => {
+                if (btn.dataset.university === universityKey) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Render research cards
+            renderResearchCards();
+        }
+
+        // Render Research Cards
+        function renderResearchCards() {
+            const container = document.getElementById('adResearchCards');
+            const uniData = metaAdsData.universities[currentUniversity];
+
+            if (!uniData) {
+                container.innerHTML = '<p>No data available</p>';
+                return;
+            }
+
+            // Only YU has Meta Ads, all others use Google Ads
+            const isYU = currentUniversity === 'yu';
+
+            let html = '';
+
+            if (!isYU) {
+                // Google Ads instructions for universities without Meta Ads
+                // Google Ads Primary Card for NYU
+                html = `
+                    <!-- Google Ads Instructions Card -->
+                    <div class="research-card" style="grid-column: span 12;">
+                        <div class="research-card-header">
+                            <div class="platform-icon-lg" style="background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);">
+                                <svg viewBox="0 0 24 24" fill="white">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                </svg>
+                            </div>
+                            <div class="platform-info">
+                                <h3>Google Ads Research</h3>
+                                <p>${uniData.name} • Search Instructions</p>
+                            </div>
+                        </div>
+                        <div class="research-card-body">
+                            <div style="background: var(--bg-secondary); border-radius: 12px; padding: 24px; margin-bottom: 16px;">
+                                <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">How to Find ${uniData.name} Ads on Google:</h4>
+                                <ol style="margin-left: 20px; line-height: 1.8; color: var(--text-secondary);">
+                                    <li>Click the button below to open Google Ads Transparency Center</li>
+                                    <li>In the search box, type: <strong style="color: var(--ios-blue);">"${uniData.name}"</strong></li>
+                                    <li>Click on the university's advertiser profile from the results</li>
+                                    <li>View their active Google Search, Display, and YouTube ads</li>
+                                </ol>
+                            </div>
+                            <a href="https://adstransparency.google.com/?region=US" target="_blank" class="link-btn" style="width: 100%; justify-content: center; padding: 16px; font-size: 15px;">
+                                Open Google Ads Transparency Center
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                                </svg>
+                            </a>
+                            <p style="font-size: 13px; color: var(--text-tertiary); margin-top: 16px; text-align: center; line-height: 1.6;">
+                                <strong>Note:</strong> ${uniData.name} does not have active ads on Meta (Facebook/Instagram). Their digital advertising strategy focuses on Google Ads platform.
+                            </p>
+                        </div>
+                    </div>
+
+                `;
+            } else {
+                // Meta Ads Primary for other universities
+                html = `
+                    <!-- Meta Ad Library Card -->
+                    <div class="research-card">
+                        <div class="research-card-header">
+                            <div class="platform-icon-lg" style="background: linear-gradient(135deg, #1877f2 0%, #0e5dbf 100%);">
+                                <svg viewBox="0 0 24 24" fill="white">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                            </div>
+                            <div class="platform-info">
+                                <h3>Meta Ad Library</h3>
+                                <p>${uniData.name} • @${uniData.facebook_page}</p>
+                            </div>
+                        </div>
+                        <div class="research-card-body">
+                            ${uniData.links.map(link => `
+                                <div class="research-link-item">
+                                    <span class="link-badge search">SEARCH</span>
+                                    <span class="link-desc">${link.description}</span>
+                                    <a href="${link.url}" target="_blank" class="link-btn">
+                                        Open
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Instagram Card -->
+                    <div class="research-card">
+                        <div class="research-card-header">
+                            <div class="platform-icon-lg" style="background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);">
+                                <svg viewBox="0 0 24 24" fill="white">
+                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/>
+                                    <path d="M12 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                </svg>
+                            </div>
+                            <div class="platform-info">
+                                <h3>Instagram Ads</h3>
+                                <p>Included in Meta Ad Library</p>
+                            </div>
+                        </div>
+                        <div class="research-card-body">
+                            <div class="research-link-item">
+                                <span class="link-badge page">INFO</span>
+                                <span class="link-desc">Instagram ads appear in Meta Ad Library results</span>
+                                <a href="${uniData.links[0].url}" target="_blank" class="link-btn">
+                                    View
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Google Ads Card -->
+                    <div class="research-card">
+                        <div class="research-card-header">
+                            <div class="platform-icon-lg" style="background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);">
+                                <svg viewBox="0 0 24 24" fill="white">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                </svg>
+                            </div>
+                            <div class="platform-info">
+                                <h3>Google Ads</h3>
+                                <p>Transparency Center</p>
+                            </div>
+                        </div>
+                        <div class="research-card-body">
+                            <div class="research-link-item">
+                                <span class="link-badge search">SEARCH</span>
+                                <span class="link-desc">Search for "${uniData.name}" on Google Ads</span>
+                                <a href="https://adstransparency.google.com/" target="_blank" class="link-btn">
+                                    Open
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                                    </svg>
+                                </a>
+                            </div>
+                            <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 12px; line-height: 1.5;">
+                                Visit Google Ads Transparency Center and type "${uniData.name}" in the search box.
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Load Ads Data
+        async function loadAdsData() {
+            try {
+                const response = await fetch(`${API_BASE}/api/meta-ads/yeshiva_university`);
+                adsData = await response.json();
+                renderAds();
+                updateStats();
+            } catch (error) {
+                console.error('Error loading ads:', error);
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function renderAds() {
+            const grid = document.getElementById('adsGrid');
+
+            let filtered = adsData;
+            if (currentFilter !== 'all') {
+                if (currentFilter === 'active') filtered = adsData.filter(ad => ad.is_active);
+                else if (currentFilter === 'inactive') filtered = adsData.filter(ad => !ad.is_active);
+                else if (currentFilter === 'facebook') filtered = adsData.filter(ad => ad.platforms?.includes('FACEBOOK'));
+                else if (currentFilter === 'instagram') filtered = adsData.filter(ad => ad.platforms?.includes('INSTAGRAM'));
+                else if (currentFilter === 'video') filtered = adsData.filter(ad => ad.video_url && ad.video_url !== 'null');
+            }
+
+            grid.innerHTML = filtered.map(ad => {
+                const hasVideo = ad.video_url && ad.video_url !== 'null';
+                const hasImage = ad.image_url && ad.image_url !== '';
+                const displayBody = ad.body && !ad.body.includes('{{product') ? ad.body : '';
+                const displayTitle = ad.title && !ad.title.includes('{{product') ? ad.title : '';
+
+                return `
+                    <div class="ad-card" onclick="showAdDetails('${ad.id}')">
+                        <div class="ad-media">
+                            ${hasVideo ? `
+                                <video muted loop onmouseover="this.play()" onmouseout="this.pause()">
+                                    <source src="${ad.video_url}" type="video/mp4">
+                                </video>
+                                <div class="video-badge">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <polygon points="5 3 19 12 5 21 5 3"/>
+                                    </svg>
+                                    VIDEO
+                                </div>
+                            ` : hasImage ? `
+                                <img src="${API_BASE}${ad.image_url}" alt="${displayTitle || 'Ad'}" onerror="this.parentElement.innerHTML='<div class=\\'ad-media-placeholder\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\' ry=\\'2\\'/><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'/><polyline points=\\'21 15 16 10 5 21\\'/></svg></div>'">
+                            ` : `
+                                <div class="ad-media-placeholder">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <polyline points="21 15 16 10 5 21"/>
+                                    </svg>
+                                </div>
+                            `}
+                            <div class="media-overlay"></div>
+                            <div class="ad-status-badge ${ad.is_active ? 'active' : 'inactive'}">
+                                ${ad.is_active ? 'ACTIVE' : 'INACTIVE'}
+                            </div>
+                        </div>
+
+                        <div class="ad-content">
+                            ${displayTitle ? `<div class="ad-title">${displayTitle}</div>` : ''}
+                            ${displayBody ? `<div class="ad-body">${displayBody}</div>` : ''}
+
+                            <div class="ad-platforms">
+                                ${ad.platforms?.map(platform => `
+                                    <span class="platform-tag ${platform.toLowerCase()}">
+                                        ${platform === 'FACEBOOK' ? `
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                            </svg>
+                                        ` : `
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/>
+                                                <path d="M12 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                            </svg>
+                                        `}
+                                        ${platform}
+                                    </span>
+                                `).join('')}
+                            </div>
+
+                            ${ad.spend !== 'N/A' || ad.reach_estimate !== 'N/A' ? `
+                                <div class="ad-metrics">
+                                    <div class="metric">
+                                        <div class="metric-value">${ad.spend !== 'N/A' ? ad.spend.replace(' USD', '').replace(' – ', '-') : 'N/A'}</div>
+                                        <div class="metric-label">Spend</div>
+                                    </div>
+                                    <div class="metric">
+                                        <div class="metric-value">${ad.reach_estimate !== 'N/A' ? ad.reach_estimate.replace(' tis.', 'K') : 'N/A'}</div>
+                                        <div class="metric-label">Reach</div>
+                                    </div>
+                                    <div class="metric">
+                                        <div class="metric-value">${ad.impressions !== 'N/A' ? ad.impressions.replace(' tis.', 'K') : 'N/A'}</div>
+                                        <div class="metric-label">Impressions</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+
+                            <div class="ad-dates">
+                                <div class="date-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                        <line x1="16" y1="2" x2="16" y2="6"/>
+                                        <line x1="8" y1="2" x2="8" y2="6"/>
+                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                    </svg>
+                                    ${formatDate(ad.start_date)}
+                                </div>
+                                <div class="date-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="9 11 12 14 22 4"/>
+                                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                                    </svg>
+                                    ${formatDate(ad.end_date)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('totalAds').textContent = adsData.length;
+            document.getElementById('activeAds').textContent = adsData.filter(ad => ad.is_active).length;
+            document.getElementById('videosCount').textContent = adsData.filter(ad => ad.video_url && ad.video_url !== 'null').length;
+            document.getElementById('imagesCount').textContent = adsData.filter(ad => ad.image_url && ad.image_url !== '' && (!ad.video_url || ad.video_url === 'null')).length;
+        }
+
+        function showAdDetails(adId) {
+            const ad = adsData.find(a => a.id === adId);
+            if (!ad) return;
+
+            const modal = document.getElementById('adModal');
+            const modalBody = document.getElementById('modalBody');
+
+            const hasVideo = ad.video_url && ad.video_url !== 'null';
+            const hasImage = ad.image_url && ad.image_url !== '';
+            const displayBody = ad.body && !ad.body.includes('{{product') ? ad.body : '';
+            const displayTitle = ad.title && !ad.title.includes('{{product') ? ad.title : '';
+
+            modalBody.innerHTML = `
+                ${hasVideo || hasImage ? `
+                    <div class="ad-media" style="height: 350px; margin-bottom: 24px; border-radius: 16px; overflow: hidden;">
+                        ${hasVideo ? `
+                            <video controls style="width: 100%; height: 100%; object-fit: contain; background: black;">
+                                <source src="${ad.video_url}" type="video/mp4">
+                            </video>
+                        ` : `
+                            <img src="${API_BASE}${ad.image_url}" alt="${displayTitle || 'Ad'}" style="width: 100%; height: 100%; object-fit: contain;">
+                        `}
+                    </div>
+                ` : ''}
+
+                ${displayTitle ? `<h3 style="font-size: 22px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.5px;">${displayTitle}</h3>` : ''}
+                ${displayBody ? `<p style="font-size: 16px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 24px; white-space: pre-wrap;">${displayBody}</p>` : ''}
+
+                <div style="display: grid; gap: 16px;">
+                    <div style="padding: 20px; background: var(--bg-tertiary); border-radius: 16px;">
+                        <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; font-weight: 700; letter-spacing: 0.5px;">Platforms</div>
+                        <div style="display: flex; gap: 8px;">
+                            ${ad.platforms?.map(p => `<span class="platform-tag ${p.toLowerCase()}">${p}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    ${ad.spend !== 'N/A' ? `
+                        <div style="padding: 20px; background: var(--bg-tertiary); border-radius: 16px;">
+                            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; font-weight: 700; letter-spacing: 0.5px;">Performance Metrics</div>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                                <div>
+                                    <div style="font-size: 24px; font-weight: 700;">${ad.spend !== 'N/A' ? ad.spend.replace(' USD', '') : 'N/A'}</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">SPEND</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 24px; font-weight: 700;">${ad.reach_estimate !== 'N/A' ? ad.reach_estimate : 'N/A'}</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">REACH</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 24px; font-weight: 700;">${ad.impressions !== 'N/A' ? ad.impressions : 'N/A'}</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">IMPRESSIONS</div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div style="padding: 20px; background: var(--bg-tertiary); border-radius: 16px;">
+                        <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; font-weight: 700; letter-spacing: 0.5px;">Campaign Duration</div>
+                        <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: 600;">
+                            <div>Start: ${formatDate(ad.start_date)}</div>
+                            <div>End: ${formatDate(ad.end_date)}</div>
+                        </div>
+                    </div>
+
+                    <a href="${ad.ad_url}" target="_blank" style="display: block; padding: 16px; background: var(--ios-blue); color: white; text-align: center; border-radius: 14px; text-decoration: none; font-weight: 700; font-size: 16px; transition: all 0.2s;">
+                        View on Facebook Ad Library
+                    </a>
+                </div>
+            `;
+
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('adModal').classList.remove('show');
+        }
+
+        document.getElementById('adModal').addEventListener('click', (e) => {
+            if (e.target.id === 'adModal') closeModal();
+        });
+
+        // Filter functionality
+        document.querySelectorAll('.filter-pill[data-filter]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-pill[data-filter]').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.dataset.filter;
+                renderAds();
+            });
+        });
+
+        // Initialize
+        ThemeManager.init();
+        loadAdsData();
+        renderResearchCards(); // Initialize research cards
+    </script>
+</body>
+</html>

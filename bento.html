@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authentication Guard - Must be first! -->
+    <script src="auth.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YU Research Dashboard - Bento Style</title>
+    <link rel="stylesheet" href="bento-style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>Yeshiva University</h1>
+                <span class="badge">Research Dashboard</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn-secondary">Export Data</button>
+                <button class="btn-primary">View Reports</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Bento Grid -->
+    <main class="main">
+        <div class="container">
+
+            <!-- Bento Grid Container -->
+            <div class="bento-grid">
+
+                <!-- Large Hero Card -->
+                <div class="bento-item hero-card">
+                    <div class="card-content">
+                        <span class="label">Overview</span>
+                        <h2 class="title-xl">Competitive Digital Analysis</h2>
+                        <p class="subtitle">Comprehensive research across 4 universities and 4 digital channels</p>
+                        <div class="stats-mini">
+                            <div class="stat-mini">
+                                <div class="stat-value">5,200+</div>
+                                <div class="stat-label">Data Points</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="stat-value">95%</div>
+                                <div class="stat-label">Verified</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="stat-value">18</div>
+                                <div class="stat-label">Months</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gradient-overlay"></div>
+                </div>
+
+                <!-- Social Media Card -->
+                <div class="bento-item social-card">
+                    <div class="icon-badge purple">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </div>
+                    <h3 class="title-sm">Social Media</h3>
+                    <p class="description">Instagram, Facebook, Twitter, YouTube</p>
+                    <div class="metric-row">
+                        <div class="metric">
+                            <span class="metric-value">300+</span>
+                            <span class="metric-label">Posts</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value">50+</span>
+                            <span class="metric-label">Videos</span>
+                        </div>
+                    </div>
+                    <div class="status-badge success">✓ Captured</div>
+                </div>
+
+                <!-- Email Marketing Card -->
+                <div class="bento-item email-card">
+                    <div class="icon-badge pink">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </div>
+                    <h3 class="title-sm">Email Marketing</h3>
+                    <p class="description">Alumni newsletters & campaigns</p>
+                    <div class="metric-row">
+                        <div class="metric">
+                            <span class="metric-value">30</span>
+                            <span class="metric-label">Newsletters</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value">4</span>
+                            <span class="metric-label">Universities</span>
+                        </div>
+                    </div>
+                    <div class="status-badge success">✓ Captured</div>
+                </div>
+
+                <!-- Engagement Insight Card -->
+                <div class="bento-item insight-card gradient-purple">
+                    <div class="card-content">
+                        <span class="label-white">Key Insight</span>
+                        <div class="big-stat">2.8x</div>
+                        <h3 class="title-white">Higher Engagement</h3>
+                        <p class="description-white">Informal tone outperforms formal communication</p>
+                    </div>
+                </div>
+
+                <!-- Universities Card -->
+                <div class="bento-item universities-card">
+                    <h3 class="title-sm mb-3">Universities</h3>
+                    <div class="university-list">
+                        <div class="university-item primary">
+                            <div class="university-name">
+                                <span class="university-icon">🎓</span>
+                                <span>Yeshiva University</span>
+                            </div>
+                            <span class="university-badge">Primary</span>
+                        </div>
+                        <div class="university-item">
+                            <div class="university-name">
+                                <span class="university-icon">🏛️</span>
+                                <span>NYU</span>
+                            </div>
+                            <span class="check">✓</span>
+                        </div>
+                        <div class="university-item">
+                            <div class="university-name">
+                                <span class="university-icon">🏛️</span>
+                                <span>Brandeis</span>
+                            </div>
+                            <span class="check">✓</span>
+                        </div>
+                        <div class="university-item">
+                            <div class="university-name">
+                                <span class="university-icon">🏛️</span>
+                                <span>Columbia</span>
+                            </div>
+                            <span class="check">✓</span>
+                        </div>
+                        <div class="university-item">
+                            <div class="university-name">
+                                <span class="university-icon">🏛️</span>
+                                <span>Touro</span>
+                            </div>
+                            <span class="check partial">⚠</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Digital Ads Card -->
+                <div class="bento-item ads-card">
+                    <div class="icon-badge blue">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                    </div>
+                    <h3 class="title-sm">Digital Ads</h3>
+                    <p class="description">Meta Ads, YouTube, WSJ campaigns</p>
+                    <div class="metric-row">
+                        <div class="metric">
+                            <span class="metric-value">21</span>
+                            <span class="metric-label">Meta Ads</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value">3</span>
+                            <span class="metric-label">Channels</span>
+                        </div>
+                    </div>
+                    <div class="status-badge success">✓ Captured</div>
+                </div>
+
+                <!-- Website Analysis Card -->
+                <div class="bento-item website-card">
+                    <div class="icon-badge green">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="title-sm">Website Analysis</h3>
+                    <p class="description">Homepage, admissions, UX</p>
+                    <div class="metric-single">
+                        <span class="metric-value-large">100%</span>
+                        <span class="metric-label">Verified</span>
+                    </div>
+                    <div class="status-badge success">✓ Captured</div>
+                </div>
+
+                <!-- Coverage Stats Card -->
+                <div class="bento-item stats-card">
+                    <h3 class="title-sm mb-3">Platform Coverage</h3>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Academic Excellence</span>
+                            <span class="progress-value">30%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Target Audience</span>
+                            <span class="progress-value">85%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Content Diversity</span>
+                            <span class="progress-value">72%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 72%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Reports Card -->
+                <div class="bento-item reports-card">
+                    <h3 class="title-sm mb-3">Available Reports</h3>
+                    <div class="report-list">
+                        <div class="report-item">
+                            <span class="report-icon">📄</span>
+                            <div class="report-info">
+                                <div class="report-name">Executive Summary</div>
+                                <div class="report-meta">22 pages • 107 KB</div>
+                            </div>
+                        </div>
+                        <div class="report-item">
+                            <span class="report-icon">📊</span>
+                            <div class="report-info">
+                                <div class="report-name">Social Media Analysis</div>
+                                <div class="report-meta">14 pages • 89 KB</div>
+                            </div>
+                        </div>
+                        <div class="report-item">
+                            <span class="report-icon">📧</span>
+                            <div class="report-info">
+                                <div class="report-name">Email Marketing</div>
+                                <div class="report-meta">7 pages • 92 KB</div>
+                            </div>
+                        </div>
+                        <div class="report-item">
+                            <span class="report-icon">📱</span>
+                            <div class="report-info">
+                                <div class="report-name">Digital Ads</div>
+                                <div class="report-meta">20 pages • 147 KB</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-view-all">View All Reports →</button>
+                </div>
+
+                <!-- Timeline Card -->
+                <div class="bento-item timeline-card gradient-blue">
+                    <div class="card-content">
+                        <span class="label-white">Timeline</span>
+                        <h3 class="title-white">18 Months</h3>
+                        <p class="description-white">January 2024 - June 2025</p>
+                        <div class="timeline-dates">
+                            <span class="date-badge">Jan '24</span>
+                            <span class="date-badge">Jun '25</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Summary Card -->
+                <div class="bento-item status-card">
+                    <h3 class="title-sm mb-3">Capture Status</h3>
+                    <div class="status-summary">
+                        <div class="status-row">
+                            <span class="status-dot success"></span>
+                            <span class="status-text">Social Media</span>
+                            <span class="status-count">300+</span>
+                        </div>
+                        <div class="status-row">
+                            <span class="status-dot success"></span>
+                            <span class="status-text">Newsletters</span>
+                            <span class="status-count">30</span>
+                        </div>
+                        <div class="status-row">
+                            <span class="status-dot success"></span>
+                            <span class="status-text">Digital Ads</span>
+                            <span class="status-count">21</span>
+                        </div>
+                        <div class="status-row">
+                            <span class="status-dot success"></span>
+                            <span class="status-text">Websites</span>
+                            <span class="status-count">5</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <p class="footer-title">Yeshiva University Research</p>
+                    <p class="footer-text">Comprehensive competitive analysis • October 2025</p>
+                </div>
+                <div class="footer-credits">
+                    <p>Generated with Claude Code</p>
+                    <p>Researcher: Angel Ramirez</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

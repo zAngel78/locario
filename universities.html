@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authentication Guard - Must be first! -->
+    <script src="auth.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universities — YU Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Global Styles & Theme System -->
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* Universities Page Styles */
+        .universities-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .university-card {
+            background: var(--ios-card);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            grid-column: span 6;
+        }
+
+        .university-card:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-8px);
+        }
+
+        .university-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .university-card.yu::before { background: linear-gradient(90deg, #FC8181 0%, #F56565 100%); }
+        .university-card.nyu::before { background: linear-gradient(90deg, #9F7AEA 0%, #805AD5 100%); }
+        .university-card.columbia::before { background: linear-gradient(90deg, #4299E1 0%, #3182CE 100%); }
+        .university-card.brandeis::before { background: linear-gradient(90deg, #F6AD55 0%, #ED8936 100%); }
+        .university-card.touro::before { background: linear-gradient(90deg, #48BB78 0%, #38A169 100%); }
+
+        .university-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .university-name {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--ios-primary);
+        }
+
+        .university-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-current {
+            background: linear-gradient(135deg, rgba(252, 129, 129, 0.2) 0%, rgba(245, 101, 101, 0.2) 100%);
+            color: #F56565;
+            border: 1px solid rgba(245, 101, 101, 0.3);
+        }
+
+        .badge-leader {
+            background: linear-gradient(135deg, rgba(159, 122, 234, 0.2) 0%, rgba(128, 90, 213, 0.2) 100%);
+            color: #805AD5;
+            border: 1px solid rgba(128, 90, 213, 0.3);
+        }
+
+        .badge-premium {
+            background: linear-gradient(135deg, rgba(66, 153, 225, 0.2) 0%, rgba(49, 130, 206, 0.2) 100%);
+            color: #3182CE;
+            border: 1px solid rgba(49, 130, 206, 0.3);
+        }
+
+        .badge-peer {
+            background: linear-gradient(135deg, rgba(246, 173, 85, 0.2) 0%, rgba(237, 137, 54, 0.2) 100%);
+            color: #ED8936;
+            border: 1px solid rgba(237, 137, 54, 0.3);
+        }
+
+        .badge-challenger {
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.2) 0%, rgba(56, 161, 105, 0.2) 100%);
+            color: #38A169;
+            border: 1px solid rgba(56, 161, 105, 0.3);
+        }
+
+        .university-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .stat-box {
+            padding: 18px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+        [data-theme="dark"] .stat-box {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-box:hover {
+            background: rgba(0, 122, 255, 0.05);
+            border-color: rgba(0, 122, 255, 0.2);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--ios-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value-large {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--ios-primary);
+        }
+
+        .stat-sublabel {
+            font-size: 12px;
+            color: var(--ios-secondary);
+            margin-top: 4px;
+        }
+
+        .university-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .university-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        [data-theme="dark"] .university-link {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .university-link:hover {
+            background: rgba(0, 122, 255, 0.1);
+            border-color: rgba(0, 122, 255, 0.3);
+            transform: translateX(4px);
+        }
+
+        .link-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .link-icon {
+            width: 18px;
+            height: 18px;
+            color: var(--ios-blue);
+        }
+
+        .link-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ios-primary);
+        }
+
+        .link-arrow {
+            width: 16px;
+            height: 16px;
+            color: var(--ios-secondary);
+        }
+
+        /* Comparison Section */
+        .comparison-section {
+            grid-column: span 12;
+            background: var(--ios-card);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        }
+
+        .comparison-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+
+        .comparison-title {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--ios-primary);
+        }
+
+        .comparison-subtitle {
+            font-size: 14px;
+            color: var(--ios-secondary);
+            margin-top: 4px;
+        }
+
+        .metric-selector {
+            display: flex;
+            gap: 8px;
+            padding: 4px;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 12px;
+        }
+
+        [data-theme="dark"] .metric-selector {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .metric-option {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ios-secondary);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .metric-option.active {
+            background: var(--ios-card);
+            color: var(--ios-blue);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-chart {
+            margin-top: 24px;
+        }
+
+        .comparison-row {
+            margin-bottom: 28px;
+        }
+
+        .comparison-row-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .comparison-uni-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ios-primary);
+        }
+
+        .comparison-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--ios-blue);
+        }
+
+        /* Quick Stats Overview */
+        .quick-stats {
+            grid-column: span 12;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .quick-stat-card {
+            background: var(--ios-card);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .quick-stat-card.yu-stat::before { background: #F56565; }
+        .quick-stat-card.nyu-stat::before { background: #805AD5; }
+        .quick-stat-card.columbia-stat::before { background: #3182CE; }
+        .quick-stat-card.brandeis-stat::before { background: #ED8936; }
+        .quick-stat-card.touro-stat::before { background: #38A169; }
+
+        .quick-stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .quick-stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ios-secondary);
+            margin-bottom: 8px;
+        }
+
+        .quick-stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--ios-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .university-card {
+                grid-column: span 12;
+            }
+
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .university-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    
+        /* Mobile Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: var(--glass-bg-solid);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-top: 0.33px solid var(--ios-separator);
+            z-index: 100;
+            display: none;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .bottom-nav-content {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            flex: 1;
+            height: 100%;
+            text-decoration: none;
+            color: var(--ios-secondary);
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--ios-blue);
+        }
+
+        .bottom-nav-item svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .bottom-nav-item span {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: -0.08px;
+        }
+
+        .bottom-nav-badge {
+            position: absolute;
+            top: 8px;
+            right: 50%;
+            transform: translateX(12px);
+            min-width: 16px;
+            height: 16px;
+            background: var(--ios-red);
+            color: white;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+
+        @media (max-width: 768px) {
+            .bottom-nav {
+                display: block;
+            }
+        }
+
+    
+        /* Responsive Mobile Styles */
+        @media (max-width: 768px) {
+            /* Container adjustments */
+            .ios-container {
+                padding: 24px 16px 88px 16px !important;
+                max-width: 100%;
+            }
+
+            /* Grid layouts - single column on mobile */
+            .grid-2,
+            .grid-3,
+            .grid-4,
+            .stat-grid,
+            .metrics-grid,
+            .card-grid {
+                grid-template-columns: 1fr !important;
+                gap: 16px;
+            }
+
+            /* Typography adjustments */
+            .ios-large-title {
+                font-size: 28px !important;
+            }
+
+            .section-title {
+                font-size: 20px !important;
+            }
+
+            h1 { font-size: 28px !important; }
+            h2 { font-size: 22px !important; }
+            h3 { font-size: 18px !important; }
+
+            /* Card adjustments */
+            .card,
+            .feed-card,
+            .stat-card,
+            .ios-card {
+                padding: 20px !important;
+                margin-bottom: 16px;
+            }
+
+            /* Table overflow */
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            /* Hide desktop-only elements */
+            .desktop-only {
+                display: none !important;
+            }
+
+            /* Bottom nav visible */
+            .bottom-nav {
+                display: block !important;
+            }
+        }
+
+        /* Tablet adjustments */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .ios-container {
+                padding: 32px 24px;
+            }
+
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside class="ios-sidebar" id="ios-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+                        <path d="M16 8L10 12L16 16L22 12L16 8Z" stroke="white" stroke-width="1.5"/>
+                        <path d="M10 20L16 24L22 20" stroke="white" stroke-width="1.5"/>
+                        <path d="M10 16L16 20L22 16" stroke="white" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Yeshiva University</h1>
+                    <p>Research Intelligence</p>
+                </div>
+            </div>
+        </div>
+
+                <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-label">Overview</div>
+                <a href="elegant-bento.html" class="sidebar-nav-item">Dashboard</a>
+                <a href="analytics.html" class="sidebar-nav-item">Analytics</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-label">Communications</div>
+                <a href="internal-comms.html" class="sidebar-nav-item">Internal Comms</a>
+                <a href="audience-segmentation.html" class="sidebar-nav-item">Audience</a>
+                <a href="channels-management.html" class="sidebar-nav-item">Channels</a>
+                <a href="moderation.html" class="sidebar-nav-item">Moderation</a>
+                <a href="compliance-visual.html" class="sidebar-nav-item">Compliance</a>
+                <a href="feedback.html" class="sidebar-nav-item">Feedback</a>
+                <a href="insights.html" class="sidebar-nav-item">Insights</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-label">Channels</div>
+                <a href="social-posts.html" class="sidebar-nav-item"><span>Social Media</span><div class="nav-item-badge">50</div></a>
+                <a href="email-marketing.html" class="sidebar-nav-item"><span>Email Marketing</span><div class="nav-item-badge">72</div></a>
+                <a href="digital-ads.html" class="sidebar-nav-item"><span>Digital Ads</span><div class="nav-item-badge">20</div></a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-label">Research</div>
+                <a href="universities.html" class="sidebar-nav-item active">Universities</a>
+                <a href="research-files.html" class="sidebar-nav-item">Files</a>
+                <a href="reports.html" class="sidebar-nav-item">Reports</a>
+                <a href="settings.html" class="sidebar-nav-item">Settings</a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-status">
+                <div class="status-dot"></div>
+                <div class="status-text">Connected</div>
+            </div>
+            <button class="btn-export">Export Data</button>
+        </div>
+    </aside>
+
+    <nav class="ios-nav">
+        <div class="ios-nav-content">
+            <div class="ios-nav-top">
+                <button class="nav-icon-btn" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                        <div class="theme-toggle-slider">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="5"/>
+                                <line x1="12" y1="1" x2="12" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="23"/>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                <line x1="1" y1="12" x2="3" y2="12"/>
+                                <line x1="21" y1="12" x2="23" y2="12"/>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ios-large-title">Universities</div>
+        </div>
+    </nav>
+
+        <!-- Universities Content -->
+        <div class="ios-container">
+            <!-- Quick Stats Overview -->
+            <div class="universities-grid">
+                <div class="quick-stats">
+                    <div class="quick-stat-card yu-stat">
+                        <div class="quick-stat-label">Yeshiva University</div>
+                        <div class="quick-stat-value">15.4K</div>
+                    </div>
+                    <div class="quick-stat-card nyu-stat">
+                        <div class="quick-stat-label">New York University</div>
+                        <div class="quick-stat-value">593K</div>
+                    </div>
+                    <div class="quick-stat-card columbia-stat">
+                        <div class="quick-stat-label">Columbia University</div>
+                        <div class="quick-stat-value">457K</div>
+                    </div>
+                    <div class="quick-stat-card brandeis-stat">
+                        <div class="quick-stat-label">Brandeis University</div>
+                        <div class="quick-stat-value">25.0K</div>
+                    </div>
+                    <div class="quick-stat-card touro-stat">
+                        <div class="quick-stat-label">Touro University</div>
+                        <div class="quick-stat-value">8.2K</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- University Cards -->
+            <div class="universities-grid" id="universitiesContainer"></div>
+
+            <!-- Comparison Section -->
+            <div class="universities-grid">
+                <div class="comparison-section">
+                    <div class="comparison-header">
+                        <div>
+                            <div class="comparison-title">Comparative Analysis</div>
+                            <div class="comparison-subtitle">Interactive metrics comparison across institutions</div>
+                        </div>
+                        <div class="metric-selector">
+                            <button class="metric-option active" data-metric="instagram">Instagram</button>
+                            <button class="metric-option" data-metric="engagement">Engagement</button>
+                            <button class="metric-option" data-metric="alumni">Alumni</button>
+                        </div>
+                    </div>
+
+                    <div class="comparison-chart" id="comparisonChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('ios-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Check for saved theme preference
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
+        // Universities Data
+        const universities = {
+            yu: {
+                name: 'Yeshiva University',
+                badge: 'Current',
+                badgeClass: 'badge-current',
+                class: 'yu',
+                instagram: 15400,
+                engagement: 1.5,
+                alumni: 70000,
+                links: [
+                    { text: 'Social Media', icon: 'instagram', url: 'social-posts.html' },
+                    { text: 'Digital Ads', icon: 'ads', url: 'digital-ads.html' },
+                    { text: 'Email Marketing', icon: 'email', url: 'email-marketing.html' },
+                    { text: 'Research Files', icon: 'files', url: 'research-files.html' }
+                ]
+            },
+            nyu: {
+                name: 'New York University',
+                badge: 'Leader',
+                badgeClass: 'badge-leader',
+                class: 'nyu',
+                instagram: 593000,
+                engagement: 3.2,
+                alumni: 120000,
+                links: [
+                    { text: 'Digital Ads', icon: 'ads', url: 'digital-ads.html#nyu' },
+                    { text: 'Website', icon: 'globe', url: 'https://www.nyu.edu' }
+                ]
+            },
+            columbia: {
+                name: 'Columbia University',
+                badge: 'Premium',
+                badgeClass: 'badge-premium',
+                class: 'columbia',
+                instagram: 457000,
+                engagement: 2.9,
+                alumni: 150000,
+                links: [
+                    { text: 'Digital Ads', icon: 'ads', url: 'digital-ads.html#columbia' },
+                    { text: 'Website', icon: 'globe', url: 'https://www.columbia.edu' }
+                ]
+            },
+            brandeis: {
+                name: 'Brandeis University',
+                badge: 'Peer',
+                badgeClass: 'badge-peer',
+                class: 'brandeis',
+                instagram: 25000,
+                engagement: 1.8,
+                alumni: 60000,
+                links: [
+                    { text: 'Digital Ads', icon: 'ads', url: 'digital-ads.html#brandeis' },
+                    { text: 'Website', icon: 'globe', url: 'https://www.brandeis.edu' }
+                ]
+            },
+            touro: {
+                name: 'Touro University',
+                badge: 'Challenger',
+                badgeClass: 'badge-challenger',
+                class: 'touro',
+                instagram: 8200,
+                engagement: 1.2,
+                alumni: 50000,
+                links: [
+                    { text: 'Digital Ads', icon: 'ads', url: 'digital-ads.html#touro' },
+                    { text: 'Website', icon: 'globe', url: 'https://www.touro.edu' }
+                ]
+            }
+        };
+
+        // Render Universities
+        function renderUniversities() {
+            const container = document.getElementById('universitiesContainer');
+            let html = '';
+
+            Object.values(universities).forEach(uni => {
+                html += `
+                    <div class="university-card ${uni.class}">
+                        <div class="university-header">
+                            <div class="university-name">${uni.name}</div>
+                            <span class="university-badge ${uni.badgeClass}">${uni.badge}</span>
+                        </div>
+
+                        <div class="university-stats">
+                            <div class="stat-box">
+                                <div class="stat-label">Instagram</div>
+                                <div class="stat-value-large">${(uni.instagram / 1000).toFixed(1)}K</div>
+                                <div class="stat-sublabel">Followers</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Engagement</div>
+                                <div class="stat-value-large">${uni.engagement}%</div>
+                                <div class="stat-sublabel">Rate</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Alumni</div>
+                                <div class="stat-value-large">${(uni.alumni / 1000).toFixed(0)}K</div>
+                                <div class="stat-sublabel">Network</div>
+                            </div>
+                        </div>
+
+                        <div class="university-links">
+                            ${uni.links.map(link => `
+                                <a href="${link.url}" class="university-link">
+                                    <div class="link-content">
+                                        <svg class="link-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            ${link.icon === 'instagram' ? '<rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>' : ''}
+                                            ${link.icon === 'ads' ? '<rect x="2" y="7" width="20" height="15" rx="2" stroke="currentColor" stroke-width="2"/><path d="M16 3v4M8 3v4M3 11h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' : ''}
+                                            ${link.icon === 'email' ? '<path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' : ''}
+                                            ${link.icon === 'files' ? '<path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 2v7h7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' : ''}
+                                            ${link.icon === 'globe' ? '<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' : ''}
+                                        </svg>
+                                        <span class="link-text">${link.text}</span>
+                                    </div>
+                                    <svg class="link-arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Comparison Metrics
+        const comparisonMetrics = {
+            instagram: [
+                { name: 'NYU', value: 593000 },
+                { name: 'Columbia', value: 457000 },
+                { name: 'Brandeis', value: 25000 },
+                { name: 'YU', value: 15400 },
+                { name: 'Touro', value: 8200 }
+            ],
+            engagement: [
+                { name: 'NYU', value: 3.2 },
+                { name: 'Columbia', value: 2.9 },
+                { name: 'Brandeis', value: 1.8 },
+                { name: 'YU', value: 1.5 },
+                { name: 'Touro', value: 1.2 }
+            ],
+            alumni: [
+                { name: 'Columbia', value: 150000 },
+                { name: 'NYU', value: 120000 },
+                { name: 'YU', value: 70000 },
+                { name: 'Brandeis', value: 60000 },
+                { name: 'Touro', value: 50000 }
+            ]
+        };
+
+        // Render Comparison Chart
+        function renderComparison(metric = 'instagram') {
+            const container = document.getElementById('comparisonChart');
+            const data = comparisonMetrics[metric];
+            const maxValue = Math.max(...data.map(d => d.value));
+
+            let html = '';
+            data.forEach(item => {
+                const percent = (item.value / maxValue) * 100;
+                const displayValue = metric === 'instagram' || metric === 'alumni'
+                    ? (item.value / 1000).toFixed(1) + 'K'
+                    : item.value + '%';
+
+                html += `
+                    <div class="comparison-row">
+                        <div class="comparison-row-header">
+                            <span class="comparison-uni-name">${item.name}</span>
+                            <span class="comparison-value">${displayValue}</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar bar-blue" style="width: ${percent}%">
+                                ${percent > 15 ? `<span class="progress-label">${displayValue}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Metric Selector
+        document.addEventListener('DOMContentLoaded', () => {
+            renderUniversities();
+            renderComparison('instagram');
+
+            document.querySelectorAll('.metric-option').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.metric-option').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderComparison(btn.dataset.metric);
+                });
+            });
+        });
+    </script>
+
+    <nav class="bottom-nav">
+        <div class="bottom-nav-content">
+            <a href="elegant-bento.html" class="bottom-nav-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="social-posts.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="5"/>
+                    <circle cx="12" cy="12" r="4"/>
+                    <circle cx="18" cy="6" r="1" fill="currentColor"/>
+                </svg>
+                <span>Social</span>
+            </a>
+
+            <a href="digital-ads.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+                    <line x1="7" y1="2" x2="7" y2="22"/>
+                    <line x1="17" y1="2" x2="17" y2="22"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                </svg>
+                <span>Ads</span>
+            </a>
+
+            <a href="email-marketing.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span>Email</span>
+            </a>
+
+            <a href="research-files.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                    <polyline points="13 2 13 9 20 9"/>
+                </svg>
+                <span>Files</span>
+            </a>
+        </div>
+    </nav>
+
+</body>
+</html>

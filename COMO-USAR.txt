@@ -1,0 +1,111 @@
+═══════════════════════════════════════════════════
+  📱 CÓMO USAR EL DASHBOARD iOS - PASO A PASO
+═══════════════════════════════════════════════════
+
+🔧 PRIMERA VEZ (solo hacer una vez):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Abre CMD (Win + R, escribe "cmd", Enter)
+
+2. Ve a la carpeta:
+   cd "C:\Users\Angel daniel\Documents\research\dashboard_proposal"
+
+3. Instala las dependencias:
+   npm install
+
+   (Verás: "added 57 packages" - tarda unos segundos)
+
+
+🚀 CADA VEZ QUE QUIERAS USAR EL DASHBOARD:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Abre CMD
+
+2. Ve a la carpeta:
+   cd "C:\Users\Angel daniel\Documents\research\dashboard_proposal"
+
+3. Inicia el servidor:
+   npm start
+
+   Verás:
+   🎉 YU Research Dashboard Server Started!
+   📱 Dashboard: http://localhost:3001/elegant-bento.html
+   📊 Social Posts: http://localhost:3001/social-posts.html
+
+4. Abre tu navegador en:
+
+   DASHBOARD:
+   http://localhost:3001/elegant-bento.html
+
+   SOCIAL POSTS:
+   http://localhost:3001/social-posts.html
+
+
+📝 DEBUGGING - Si no cargan datos:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Presiona F12 en el navegador para abrir la Consola
+
+2. Busca estos mensajes:
+   📸 Instagram raw: X posts
+   📘 Facebook raw: X posts
+   🐦 Twitter raw: X posts
+
+3. Si ves errores rojos, copia y pégalos
+
+4. Las imágenes aparecerán con logs como:
+   📸 instagram image: /scraped_data/...
+   🖼️  Proxying image: https://...
+
+
+🛑 PARA DETENER EL SERVIDOR:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+En la terminal donde corre el servidor:
+Ctrl + C
+
+
+✨ QUÉ DEBERÍAS VER:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Dashboard (elegant-bento.html):
+   - Stats cards actualizadas con números reales
+   - Badge en "Social Media" con total de posts
+   - Click en "Social Media" → te lleva a social-posts.html
+
+✅ Social Posts (social-posts.html):
+   - Grid de posts con IMÁGENES
+   - Posts de Instagram, Facebook, Twitter
+   - Filtros funcionando (All | Instagram | Facebook | Twitter)
+   - Search funcionando
+   - Click en cualquier card → abre post original
+
+
+🐛 PROBLEMAS COMUNES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ "Cannot find module 'express'"
+   Solución: npm install
+
+❌ "Port 3001 already in use"
+   Solución: Cambiar el puerto en server.js línea 6
+
+❌ "No posts loading"
+   Solución:
+   1. Verificar que el servidor esté corriendo
+   2. Abrir F12 y revisar la consola
+   3. Copiar errores si los hay
+
+❌ "Images not loading"
+   Solución:
+   1. Abrir F12 → Consola
+   2. Buscar logs con 📸 y 🖼️
+   3. Copiar URLs de imágenes que fallan
+
+
+═══════════════════════════════════════════════════
+
+¿Dudas? Revisa la consola del navegador (F12)
+Los logs te dirán exactamente qué está pasando!
+
+═══════════════════════════════════════════════════

@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authentication Guard - Must be first! -->
+    <script src="auth.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Marketing — YU Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Global Styles & Theme System -->
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* Page-specific styles */
+        .ios-container,
+        .campaign-card {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Bento Grid Layout */
+        .campaigns-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* Campaign Card Base */
+        .campaign-card {
+            background: var(--ios-card);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            grid-column: span 4;
+        }
+
+        .campaign-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+            z-index: 1;
+        }
+
+        .campaign-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.12),
+                0 0 0 1px rgba(0, 122, 255, 0.1);
+        }
+
+        .campaign-card:hover::before {
+            left: 100%;
+        }
+
+        .campaign-card:active {
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        /* University Badge */
+        .uni-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+
+        .uni-badge.yu {
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.15) 0%, rgba(175, 82, 222, 0.15) 100%);
+            color: var(--ios-blue);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+        }
+
+        .uni-badge.competitor {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        /* Campaign Icon */
+        .campaign-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--ios-blue) 0%, var(--ios-purple) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        .campaign-icon svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+
+        /* Campaign Header */
+        .campaign-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+            line-height: 1.3;
+        }
+
+        .campaign-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        /* Metrics Grid */
+        .campaign-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .metric-box {
+            background: var(--bg-tertiary);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Details Section */
+        .campaign-details {
+            padding-top: 20px;
+            border-top: 0.5px solid var(--separator);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 0;
+            font-size: 14px;
+            gap: 16px;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            text-align: right;
+            flex: 1;
+        }
+
+        /* Personalization Badge */
+        .personalization-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .personalization-badge.yes {
+            background: rgba(52, 199, 89, 0.15);
+            color: var(--ios-green);
+        }
+
+        .personalization-badge.limited {
+            background: rgba(255, 149, 0, 0.15);
+            color: var(--ios-orange);
+        }
+
+        .personalization-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Contact Info */
+        .contact-badge {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-badge svg {
+            width: 16px;
+            height: 16px;
+            color: var(--ios-blue);
+            flex-shrink: 0;
+        }
+
+        .contact-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Stats Overview Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            grid-column: span 3;
+            background: var(--ios-card);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 120px;
+            opacity: 0.05;
+            border-radius: 50%;
+            filter: blur(50px);
+            transition: all 0.4s;
+        }
+
+        .stat-card.blue::after { background: var(--ios-blue); }
+        .stat-card.green::after { background: var(--ios-green); }
+        .stat-card.orange::after { background: var(--ios-orange); }
+        .stat-card.purple::after { background: var(--ios-purple); }
+
+        .stat-card:hover::after {
+            opacity: 0.15;
+            transform: scale(1.5);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .stat-card.blue .stat-icon { background: linear-gradient(135deg, var(--ios-blue) 0%, var(--ios-purple) 100%); }
+        .stat-card.green .stat-icon { background: linear-gradient(135deg, var(--ios-green) 0%, var(--ios-teal) 100%); }
+        .stat-card.orange .stat-icon { background: linear-gradient(135deg, var(--ios-orange) 0%, var(--ios-pink) 100%); }
+        .stat-card.purple .stat-icon { background: linear-gradient(135deg, var(--ios-purple) 0%, var(--ios-pink) 100%); }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            letter-spacing: -1px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Filter Pills */
+        .filter-pills {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .filter-pill.active {
+            background: var(--ios-blue);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+
+        .filter-pill:hover:not(.active) {
+            transform: scale(1.05);
+            background: var(--bg-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .campaign-card { grid-column: span 6; }
+            .stat-card { grid-column: span 6; }
+        }
+
+        @media (max-width: 768px) {
+            .campaign-card { grid-column: span 12; }
+            .stat-card { grid-column: span 12; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside class="ios-sidebar" id="ios-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+                        <path d="M16 8L10 12L16 16L22 12L16 8Z" stroke="white" stroke-width="1.5"/>
+                        <path d="M10 20L16 24L22 20" stroke="white" stroke-width="1.5"/>
+                        <path d="M10 16L16 20L22 16" stroke="white" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Yeshiva University</h1>
+                    <p>Research Intelligence</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-label">Overview</div>
+                <a href="elegant-bento.html" class="sidebar-nav-item">Dashboard</a>
+                <a href="analytics.html" class="sidebar-nav-item">Analytics</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-label">Communications</div>
+                <a href="internal-comms.html" class="sidebar-nav-item">Internal Comms</a>
+                <a href="audience-segmentation.html" class="sidebar-nav-item">Audience</a>
+                <a href="channels-management.html" class="sidebar-nav-item">Channels</a>
+                <a href="moderation.html" class="sidebar-nav-item">Moderation</a>
+                <a href="compliance-visual.html" class="sidebar-nav-item">Compliance</a>
+                <a href="feedback.html" class="sidebar-nav-item">Feedback</a>
+                <a href="insights.html" class="sidebar-nav-item">Insights</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-label">Channels</div>
+                <a href="social-posts.html" class="sidebar-nav-item">
+                    <span>Social Media</span>
+                    <div class="nav-item-badge" id="social-badge">0</div>
+                </a>
+                <a href="email-marketing.html" class="sidebar-nav-item active">
+                    <span>Email Marketing</span>
+                    <div class="nav-item-badge">8</div>
+                </a>
+                <a href="digital-ads.html" class="sidebar-nav-item">
+                    <span>Digital Ads</span>
+                    <div class="nav-item-badge">19</div>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-label">Research</div>
+                <a href="universities.html" class="sidebar-nav-item">Universities</a>
+                <a href="research-files.html" class="sidebar-nav-item">Files</a>
+                <a href="reports.html" class="sidebar-nav-item">Reports</a>
+                <a href="settings.html" class="sidebar-nav-item">Settings</a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-status">
+                <div class="status-dot"></div>
+                <div class="status-text">Connected</div>
+            </div>
+            <button class="btn-export">Export Data</button>
+        </div>
+    </aside>
+
+    <nav class="ios-nav">
+        <div class="ios-nav-content">
+            <div class="ios-nav-top">
+                <button class="nav-icon-btn" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <!-- Dark Mode Toggle -->
+                    <div class="theme-toggle" id="themeToggle" onclick="ThemeManager.toggleTheme()">
+                        <div class="theme-toggle-slider">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="5"/>
+                                <line x1="12" y1="1" x2="12" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="23"/>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                <line x1="1" y1="12" x2="3" y2="12"/>
+                                <line x1="21" y1="12" x2="23" y2="12"/>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h1 class="ios-large-title">Email Marketing</h1>
+        </div>
+    </nav>
+
+    <main class="ios-container">
+        <!-- Stats Overview -->
+        <div class="stats-row">
+            <div class="stat-card blue">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                </div>
+                <div class="stat-value" id="totalCampaigns">0</div>
+                <div class="stat-label">Total Campaigns</div>
+            </div>
+
+            <div class="stat-card green">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <div class="stat-value">70K+</div>
+                <div class="stat-label">Total Reach</div>
+            </div>
+
+            <div class="stat-card orange">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                </div>
+                <div class="stat-value" id="yuCampaigns">0</div>
+                <div class="stat-label">YU Campaigns</div>
+            </div>
+
+            <div class="stat-card purple">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                    </svg>
+                </div>
+                <div class="stat-value" id="avgFrequency">-</div>
+                <div class="stat-label">Avg. Frequency</div>
+            </div>
+        </div>
+
+        <!-- Filter Pills -->
+        <div class="filter-pills">
+            <button class="filter-pill active" data-filter="all">All Universities</button>
+            <button class="filter-pill" data-filter="Yeshiva University">Yeshiva University</button>
+            <button class="filter-pill" data-filter="Brandeis University">Brandeis</button>
+            <button class="filter-pill" data-filter="Touro University">Touro</button>
+        </div>
+
+        <!-- Extracted Emails Section (NEW!) -->
+        <div style="margin-bottom: 32px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                <h2 style="font-size: 24px; font-weight: 700; color: var(--text-primary);">Emails Extracted from PDFs</h2>
+                <div style="padding: 8px 16px; background: linear-gradient(135deg, var(--ios-green) 0%, var(--ios-teal) 100%); color: white; border-radius: 20px; font-size: 14px; font-weight: 700;" id="emailsFoundBadge">
+                    0 emails found
+                </div>
+            </div>
+            <div class="campaigns-grid" id="extractedEmailsGrid">
+                <!-- Email cards will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Newsletter Campaigns Section -->
+        <h2 style="font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 20px;">Newsletter Campaigns</h2>
+
+        <!-- Campaigns Grid -->
+        <div class="campaigns-grid" id="campaignsGrid">
+            <!-- Cards will be inserted here -->
+        </div>
+    </main>
+
+    <!-- Theme Toast -->
+    <div class="theme-toast" id="theme-toast"></div>
+
+    <!-- PDF Modal (igual que research-files.html) -->
+    <div class="pdf-modal" id="pdf-modal" onclick="closePdfModal(event)" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px;">
+        <div class="pdf-modal-content" onclick="event.stopPropagation()" style="background: var(--ios-card); border-radius: 12px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden;">
+            <div class="pdf-header" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 0.5px solid var(--ios-separator);">
+                <div class="pdf-title" id="pdf-title" style="font-size: 15px; font-weight: 600;">Document</div>
+                <button class="pdf-close" onclick="closePdfModal()" style="width: 28px; height: 28px; border: none; background: var(--bg-tertiary); color: var(--text-primary); border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="pdf-body" style="flex: 1; overflow: auto; padding: 16px; background: var(--bg-primary);">
+                <iframe id="pdf-viewer" class="pdf-viewer" src="" style="width: 100%; min-height: 500px; border: none;"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://nomassi-1.onrender.com';
+        let campaignsData = [];
+        let currentFilter = 'all';
+        
+        // Datos embebidos - No requiere backend
+        let extractedEmails = {
+            "summary": {
+                "total_pdfs_processed": 18,
+                "total_emails_found": 150,
+                "universities": {
+                    "yu": {"pdfs": 5, "emails": 18},
+                    "nyu": {"pdfs": 4, "emails": 7},
+                    "brandeis": {"pdfs": 5, "emails": 6},
+                    "columbia": {"pdfs": 5, "emails": 44},
+                    "touro": {"pdfs": 4, "emails": 65}
+                }
+            },
+            "emails_by_university": {
+                "yu": {
+                    "name": "Yeshiva University",
+                    "emails": ["yuadmit@yu.edu", "bradley.avrahami@yu.edu", "imi@yu.edu", "omsw@online.yu.edu", "yucardsupport@yu.edu", "helpdesk@yu.edu", "mkrakow1@yu.edu", "gradschool@yu.edu", "accounts@yu.edu", "wilfregistrar@yu.edu", "canvassupport@yu.edu", "nancy.obarr@yu.edu", "marian.reiss@yu.edu", "yucardpix@yu.edu", "oiss@yu.edu", "yuhealthcenter@yu.edu", "laya.salomon@yu.edu", "parking@yu.edu"],
+                    "sources": ["YU_Undergraduate_Admissions_Catalog.pdf", "YU_Azrieli_Welcome_Packet.pdf", "YU_Syms_EMBA_Instructions.pdf", "YU_Wurzweiler_How_To_Apply.pdf"],
+                    "pdfs": [
+                        {"file": "YU_Undergraduate_Admissions_Catalog.pdf", "title": "Undergraduate Admissions Catalog"},
+                        {"file": "YU_Azrieli_Welcome_Packet.pdf", "title": "Azrieli Welcome Packet"},
+                        {"file": "YU_Syms_EMBA_Instructions.pdf", "title": "Syms EMBA Instructions"},
+                        {"file": "YU_Wurzweiler_How_To_Apply.pdf", "title": "Wurzweiler How To Apply"},
+                        {"file": "YU_STEM_Application_Checklist.pdf", "title": "STEM Application Checklist"}
+                    ]
+                },
+                "nyu": {
+                    "name": "New York University",
+                    "emails": ["steinhardt.gradadmissions@nyu.edu", "admissions@edinnovation.steinhardt.nyu.edu", "admissions@speech.steinhardt.nyu.edu", "admissions@counseling.steinhardt.nyu.edu", "nursing.admissions@nyu.edu", "nursing.ug.admissions@nyu.edu", "law.grad.moreinfo@nyu.edu"],
+                    "sources": ["NYU_Graduate_Steinhardt_Admissions.pdf", "NYU_Online_Admissions_Contact.pdf", "NYU_Undergraduate_Nursing_Admissions.pdf", "NYU_Law_School_Graduate_Division_2025.pdf"],
+                    "pdfs": [
+                        {"file": "NYU_PDF_1.pdf", "title": "Graduate Steinhardt Admissions"},
+                        {"file": "NYU_PDF_2.pdf", "title": "Online Admissions Contact"},
+                        {"file": "NYU_PDF_3.pdf", "title": "Undergraduate Nursing Admissions"},
+                        {"file": "NYU_PDF_4.pdf", "title": "Law School Graduate Division 2025"}
+                    ]
+                },
+                "brandeis": {
+                    "name": "Brandeis University",
+                    "emails": ["HellerAdmissions@Brandeis.edu", "admissions@brandeis.edu", "opir@brandeis.edu", "admission@lemberg.brandeis.edu", "sfs@brandeis.edu", "finaid@brandeis.edu"],
+                    "sources": ["BRANDEIS_PhD_Program_Application.pdf", "BRANDEIS_Common_Data_Set_2023-24.pdf", "BRANDEIS_Financial_Guide_2023-24.pdf"],
+                    "pdfs": [
+                        {"file": "BRANDEIS_PDF_1.pdf", "title": "PhD Program Application"},
+                        {"file": "BRANDEIS_PDF_2.pdf", "title": "Multiple PD/PI Signature Form"},
+                        {"file": "BRANDEIS_PDF_3.pdf", "title": "Common Data Set 2023-24"},
+                        {"file": "BRANDEIS_PDF_4.pdf", "title": "College Report Form"},
+                        {"file": "BRANDEIS_PDF_5.pdf", "title": "Financial Guide 2023-24"}
+                    ]
+                },
+                "columbia": {
+                    "name": "Columbia University",
+                    "emails": ["cssw-admit@columbia.edu", "admit@columbia.edu", "veronica.hornig@columbia.edu", "elizabeth.alt@columbia.edu", "sm5665@columbia.edu", "patrick.greaney@columbia.edu", "benny.rivera@columbia.edu", "paige.cook@columbia.edu", "katherine.carraway@columbia.edu", "dana.pavarini@columbia.edu", "michael.gulino@columbia.edu", "t.crawford@columbia.edu", "chelsie.guner@columbia.edu", "jade.quintero@columbia.edu", "witting.olivia@columbia.edu", "c.quach@columbia.edu", "whitney@columbia.edu", "sarah.campbell@columbia.edu", "brigitte.rodriguez@columbia.edu", "jess.lee@columbia.edu", "mackenzie.george@columbia.edu", "ella.kolosek@columbia.edu", "lauren.toneatto@columbia.edu", "moriah.tom@columbia.edu", "jennifer.gutierrezmarquez@columbia.edu", "ian.gregory-davis@columbia.edu", "jm996@columbia.edu", "a.c.evans@columbia.edu", "john.chavez@columbia.edu", "r.joseph@columbia.edu", "t.odunjo@columbia.edu", "l.dikkers@columbia.edu", "lena.rhie@columbia.edu", "gtoja@columbia.edu", "imogen.fordyce@columbia.edu", "n.kisanga@columbia.edu", "maya.johnson@columbia.edu", "anna.marti@columbia.edu", "n.stephenson@columbia.edu", "kathryn.saunders@columbia.edu", "rebecca.schiavo@columbia.edu", "megana.sekar@columbia.edu", "hannah.healy@columbia.edu", "jermaine.doris@columbia.edu", "fritz.burgher@columbia.edu"],
+                    "sources": ["COLUMBIA_Counselor_Newsletter_2023-2024.pdf", "COLUMBIA_Admissions_Counselor_Newsletter_24-25.pdf", "COLUMBIA_Regional_Assignments_2022-2023.pdf", "COLUMBIA_SPS_Staff_Directory.pdf", "COLUMBIA_Social_Work_Application_Instructions.pdf"],
+                    "pdfs": [
+                        {"file": "COLUMBIA_PDF_1.pdf", "title": "Counselor Newsletter 2023-2024"},
+                        {"file": "COLUMBIA_PDF_2.pdf", "title": "Admissions Counselor Newsletter 24-25"},
+                        {"file": "COLUMBIA_PDF_3.pdf", "title": "Regional Assignments 2022-2023"},
+                        {"file": "COLUMBIA_PDF_4.pdf", "title": "SPS Staff Directory"},
+                        {"file": "COLUMBIA_PDF_5.pdf", "title": "Social Work Application Instructions"}
+                    ]
+                },
+                "touro": {
+                    "name": "Touro University",
+                    "emails": ["admissions.lander@touro.edu", "alla.zavilevich@touro.edu", "briendy.stern@touro.edu", "ella.tsirulnik@touro.edu", "robert.goldschmidt@touro.edu", "janet.lazarus5@touro.edu", "henry.abramson@touro.edu", "moshe.sokol@touro.edu", "sandy.pikolos@touro.edu", "chana.sosevsky@touro.edu", "lorinda.moore@touro.edu", "vladimir.shapiro@touro.edu", "herbert.ratner@touro.edu", "naomi.kohl@touro.edu", "shmuel.klammer@touro.edu", "yelena.volis@touro.edu", "thomas.rozinski@touro.edu", "sherry.krupka@touro.edu", "edlira.agalliu@touro.edu", "joseph.shimonov@touro.edu", "joel.dickstein@touro.edu", "compliance@touro.edu", "tracy.white@touro.edu", "bradley.shaev@touro.edu", "zakira.tsofina@touro.edu", "lidia.meindl@touro.edu", "timothy.taylor@touro.edu", "rivka.hellman@touro.edu", "career.services@touro.edu", "filomena.califano@touro.edu", "albina.lyskova@touro.edu", "matthew.lieberman@touro.edu", "karen.sutton@touro.edu", "naum.volfson@touro.edu", "csosevsky@touro.edu", "robertgo@touro.edu", "marian.stoltz-loike@touro.edu", "judah.weinberger6@touro.edu", "stanleyb@touro.edu", "esther.rose@touro.edu", "rachel.baror@touro.edu", "tourola@touro.edu", "lenin.ortega@touro.edu", "online@tuw.edu", "averymh@touro.edu", "cheryl.bernath@touro.edu", "nonstop@touro.edu", "help@touro.edu", "rbressl@touro.edu", "inessa.latypov@touro.edu", "marcia.bodenstein@touro.edu", "john.loike@touro.edu", "michelle.coppin@touro.edu", "security@touro.edu", "stephanie.evans@touro.edu", "brian.chiswell@touro.edu", "brenda.strassfeld@touro.edu", "avery.horowitz@touro.edu", "florence.cohen@touro.edu", "simonb@touro.edu", "jyakoby@touro.edu", "mshatzma@touro.edu", "esther.braun@touro.edu", "evan.mintzer@touro.edu", "advisor@touro.edu", "kdanishefsky@touro.edu"],
+                    "sources": ["TOURO_UG_Student_Handbook.pdf", "TOURO_Lander_Application.pdf"],
+                    "pdfs": [
+                        {"file": "TOURO_PDF_1.pdf", "title": "Undergraduate Student Handbook"},
+                        {"file": "TOURO_PDF_2.pdf", "title": "Lander College Application"},
+                        {"file": "TOURO_PDF_3.pdf", "title": "TUN DO Technical Standards"},
+                        {"file": "TOURO_PDF_4.pdf", "title": "Application for I-20"}
+                    ]
+                }
+            }
+        };
+
+        // Theme Manager
+        const ThemeManager = {
+            init() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            },
+
+            toggleTheme() {
+                const html = document.documentElement;
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+
+                const toast = document.getElementById('theme-toast');
+                toast.textContent = newTheme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode';
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            }
+        };
+
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('ios-sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('show');
+        }
+
+        // Los datos ya están embebidos arriba - No se necesita cargar nada
+        function loadExtractedEmails() {
+            // Ya están cargados en la variable extractedEmails
+            return Promise.resolve();
+        }
+
+        // Load Email Marketing Data
+        function loadEmailData() {
+            campaignsData = [
+                {
+                    university: "Yeshiva University",
+                    newsletterType: "Alumni Affairs",
+                    frequency: "Monthly (verified)",
+                    audience: "Alumni",
+                    estimatedReach: "70000+",
+                    contactMethod: "alumni@yu.edu | beth.lebensonpraver@yu.edu",
+                    contentFocus: "Alumni news | Networking | Reunions | Events | Israel engagement",
+                    personalization: "Yes",
+                    dataSource: "yu.edu/news/alumni archives"
+                },
+                {
+                    university: "Yeshiva University",
+                    newsletterType: "The View from YU",
+                    frequency: "Monthly (verified)",
+                    audience: "All Community",
+                    estimatedReach: "70000+",
+                    contactMethod: "N/A",
+                    contentFocus: "University-wide news | Achievements | Faculty highlights",
+                    personalization: "Yes",
+                    dataSource: "yu.edu official newsletters"
+                },
+                {
+                    university: "Yeshiva University",
+                    newsletterType: "Sy Syms Business",
+                    frequency: "Periodic",
+                    audience: "Business Students/Alumni",
+                    estimatedReach: "Subset of 70000",
+                    contactMethod: "N/A",
+                    contentFocus: "Business programs | Opportunities | Professional development",
+                    personalization: "Yes",
+                    dataSource: "yu.edu/alumni mentions"
+                },
+                {
+                    university: "Yeshiva University",
+                    newsletterType: "Katz School",
+                    frequency: "Periodic",
+                    audience: "Science/Health Students",
+                    estimatedReach: "Subset of 70000",
+                    contactMethod: "N/A",
+                    contentFocus: "Research | Academic developments | Health tech",
+                    personalization: "Yes",
+                    dataSource: "yu.edu/alumni mentions"
+                },
+                {
+                    university: "Yeshiva University",
+                    newsletterType: "Donor Communications",
+                    frequency: "Periodic",
+                    audience: "Donors/Prospects",
+                    estimatedReach: "Unknown",
+                    contactMethod: "annualgiving@yu.edu | 646.592.6850",
+                    contentFocus: "Rise Up campaign | Giving impact | $613M goal updates",
+                    personalization: "Yes",
+                    dataSource: "yu.edu/alumni newsletters"
+                },
+                {
+                    university: "Brandeis University",
+                    newsletterType: "Alumni Magazine",
+                    frequency: "Tri-annual (3 issues/year)",
+                    audience: "Alumni",
+                    estimatedReach: "Unknown",
+                    contactMethod: "alumni.brandeis.edu/news/subscribe",
+                    contentFocus: "In-depth content | Inspiring profiles | Community perspectives",
+                    personalization: "Limited",
+                    dataSource: "alumni.brandeis.edu"
+                },
+                {
+                    university: "Touro University",
+                    newsletterType: "Alumni Newsletter",
+                    frequency: "Quarterly (verified)",
+                    audience: "Alumni",
+                    estimatedReach: "90000+ global",
+                    contactMethod: "gfaison@touro.edu | jvallor@touro.edu",
+                    contentFocus: "Professional achievements | Alumni successes",
+                    personalization: "Limited",
+                    dataSource: "tu.edu/alumni official page"
+                },
+                {
+                    university: "Touro University",
+                    newsletterType: "TouroCOM Alumni",
+                    frequency: "Quarterly",
+                    audience: "Medical Alumni",
+                    estimatedReach: "Subset of 90000",
+                    contactMethod: "alumni.tourocom@touro.edu | 646-981-4576",
+                    contentFocus: "Medical alumni updates | Professional milestones",
+                    personalization: "Limited",
+                    dataSource: "tourocom.touro.edu/alumni"
+                }
+            ];
+
+            renderCampaigns();
+            updateStats();
+        }
+
+        function renderCampaigns() {
+            const grid = document.getElementById('campaignsGrid');
+            const filtered = currentFilter === 'all'
+                ? campaignsData
+                : campaignsData.filter(c => c.university === currentFilter);
+
+            grid.innerHTML = filtered.map(campaign => `
+                <div class="campaign-card">
+                    <span class="uni-badge ${campaign.university === 'Yeshiva University' ? 'yu' : 'competitor'}">
+                        ${campaign.university === 'Yeshiva University' ? 'YU' : campaign.university.split(' ')[0]}
+                    </span>
+
+                    <div class="campaign-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </div>
+
+                    <div class="campaign-title">${campaign.newsletterType}</div>
+                    <div class="campaign-subtitle">${campaign.university}</div>
+
+                    <div class="campaign-metrics">
+                        <div class="metric-box">
+                            <div class="metric-value">${campaign.frequency.split(' ')[0]}</div>
+                            <div class="metric-label">Frequency</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">${campaign.estimatedReach}</div>
+                            <div class="metric-label">Reach</div>
+                        </div>
+                    </div>
+
+                    <div class="campaign-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Audience</span>
+                            <span class="detail-value">${campaign.audience}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Content</span>
+                            <span class="detail-value">${campaign.contentFocus.split(' | ')[0]}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Personal</span>
+                            <span class="personalization-badge ${campaign.personalization.toLowerCase()}">
+                                ${campaign.personalization === 'Yes' ? `
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                ` : `
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                `}
+                                ${campaign.personalization}
+                            </span>
+                        </div>
+                    </div>
+
+                    ${campaign.contactMethod !== 'N/A' ? `
+                        <div class="contact-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                            <span class="contact-text">${campaign.contactMethod.split(' | ')[0]}</span>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('totalCampaigns').textContent = campaignsData.length;
+            document.getElementById('yuCampaigns').textContent = campaignsData.filter(c => c.university === 'Yeshiva University').length;
+
+            // Calculate average frequency
+            const frequencies = campaignsData.map(c => {
+                const freq = c.frequency.toLowerCase();
+                if (freq.includes('monthly')) return 'Monthly';
+                if (freq.includes('quarterly')) return 'Quarterly';
+                if (freq.includes('tri-annual')) return 'Tri-annual';
+                return 'Periodic';
+            });
+
+            const monthlyCount = frequencies.filter(f => f === 'Monthly').length;
+            if (monthlyCount > frequencies.length / 2) {
+                document.getElementById('avgFrequency').textContent = 'Monthly';
+            } else {
+                document.getElementById('avgFrequency').textContent = 'Quarterly';
+            }
+        }
+
+        function updateEmailStats() {
+            if (extractedEmails.summary) {
+                // Update badge in sidebar (if exists)
+                const badge = document.querySelector('.sidebar-nav-item.active .nav-item-badge');
+                if (badge) {
+                    badge.textContent = extractedEmails.summary.total_emails_found;
+                }
+
+                // Update emails found badge
+                const emailsBadge = document.getElementById('emailsFoundBadge');
+                if (emailsBadge) {
+                    emailsBadge.textContent = `${extractedEmails.summary.total_emails_found} emails found`;
+                }
+
+                // Render extracted emails
+                renderExtractedEmails();
+            }
+        }
+
+        function renderExtractedEmails() {
+            const grid = document.getElementById('extractedEmailsGrid');
+            if (!extractedEmails.emails_by_university) {
+                grid.innerHTML = '<p style="color: var(--text-secondary);">No emails extracted yet.</p>';
+                return;
+            }
+
+            const filtered = currentFilter === 'all' 
+                ? Object.values(extractedEmails.emails_by_university)
+                : [extractedEmails.emails_by_university[currentFilter.toLowerCase().split(' ')[0]]].filter(Boolean);
+
+            grid.innerHTML = filtered.map(uni => `
+                <div class="campaign-card">
+                    <span class="uni-badge ${uni.name === 'Yeshiva University' ? 'yu' : 'competitor'}">
+                        ${uni.name === 'Yeshiva University' ? 'YU' : uni.name.split(' ')[0]}
+                    </span>
+
+                    <div class="campaign-icon" style="background: linear-gradient(135deg, var(--ios-green) 0%, var(--ios-teal) 100%);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+
+                    <div class="campaign-title">${uni.name}</div>
+                    <div class="campaign-subtitle">Emails Extracted from PDFs</div>
+
+                    <div class="campaign-metrics">
+                        <div class="metric-box">
+                            <div class="metric-value">${uni.emails.length}</div>
+                            <div class="metric-label">Emails</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">${uni.sources ? uni.sources.length : 0}</div>
+                            <div class="metric-label">PDFs</div>
+                        </div>
+                    </div>
+
+                    <div class="campaign-details" style="max-height: 200px; overflow-y: auto;">
+                        ${uni.emails.slice(0, 5).map(email => `
+                            <div class="contact-badge" style="margin-top: 8px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                <span class="contact-text" style="word-break: break-all;">${email}</span>
+                            </div>
+                        `).join('')}
+                        ${uni.emails.length > 5 ? `
+                            <div style="text-align: center; padding: 12px; color: var(--ios-blue); font-size: 13px; font-weight: 600;">
+                                +${uni.emails.length - 5} more emails
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    ${uni.pdfs ? `
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 0.5px solid var(--ios-separator);">
+                            <div style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">View PDFs:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                ${uni.pdfs.map(pdf => `
+                                    <button onclick="openPdfModal('${pdf.file}', '${pdf.title}')" 
+                                            style="padding: 6px 12px; background: var(--ios-blue); color: white; border: none; border-radius: 12px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                                            onmouseover="this.style.opacity='0.8'"
+                                            onmouseout="this.style.opacity='1'">
+                                        ${pdf.title.length > 20 ? pdf.title.substring(0, 20) + '...' : pdf.title}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Filter functionality
+        document.querySelectorAll('.filter-pill').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.dataset.filter;
+                renderCampaigns();
+                renderExtractedEmails(); // Also filter extracted emails
+            });
+        });
+
+        // PDF Modal Functions
+        function openPdfModal(pdfPath, title) {
+            const modal = document.getElementById('pdf-modal');
+            const titleEl = document.getElementById('pdf-title');
+            const viewer = document.getElementById('pdf-viewer');
+
+            titleEl.textContent = title;
+            viewer.src = `pdfs/${pdfPath}`;
+            modal.style.display = 'flex';
+        }
+
+        function closePdfModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            const modal = document.getElementById('pdf-modal');
+            const viewer = document.getElementById('pdf-viewer');
+
+            modal.style.display = 'none';
+            viewer.src = '';
+        }
+
+        // Initialize
+        ThemeManager.init();
+        loadExtractedEmails().then(() => {
+            loadEmailData();
+            updateEmailStats();
+        });
+    </script>
+
+    <!-- Bottom Navigation - Mobile Only -->
+    <nav class="bottom-nav" style="position: fixed; bottom: 0; left: 0; right: 0; height: 68px; background: var(--glass-bg-solid); backdrop-filter: saturate(180%) blur(20px); border-top: 0.33px solid var(--ios-separator); z-index: 100; display: none;">
+        <div style="display: flex; justify-content: space-around; align-items: center; height: 100%;">
+            <a href="elegant-bento.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; text-decoration: none; color: var(--ios-secondary);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                <span style="font-size: 10px; font-weight: 500;">Dashboard</span>
+            </a>
+            <a href="social-posts.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; text-decoration: none; color: var(--ios-secondary);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <rect x="2" y="2" width="20" height="20" rx="5"/>
+                    <circle cx="12" cy="12" r="4"/>
+                </svg>
+                <span style="font-size: 10px; font-weight: 500;">Social</span>
+            </a>
+            <a href="digital-ads.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; text-decoration: none; color: var(--ios-secondary);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+                    <line x1="7" y1="2" x2="7" y2="22"/>
+                    <line x1="17" y1="2" x2="17" y2="22"/>
+                </svg>
+                <span style="font-size: 10px; font-weight: 500;">Ads</span>
+            </a>
+            <a href="email-marketing.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; text-decoration: none; color: var(--ios-blue);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span style="font-size: 10px; font-weight: 500;">Email</span>
+            </a>
+            <a href="research-files.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; text-decoration: none; color: var(--ios-secondary);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                    <polyline points="13 2 13 9 20 9"/>
+                </svg>
+                <span style="font-size: 10px; font-weight: 500;">Files</span>
+            </a>
+        </div>
+    </nav>
+
+    <style>
+        @media (max-width: 768px) {
+            .bottom-nav {
+                display: block !important;
+            }
+            .ios-container {
+                padding-bottom: 88px !important;
+            }
+        }
+    </style>
+</body>
+</html>

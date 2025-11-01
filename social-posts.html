@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authentication Guard - Must be first! -->
+    <script src="auth.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media — Research Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Global Styles & Theme System -->
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* Page-specific styles only */
+
+        body {
+            padding-top: 0 !important;
+        }
+
+        .ios-sidebar,
+        .ios-nav,
+        .ios-container,
+        .ios-page,
+        .sidebar-overlay,
+        .post-card {
+            position: relative;
+            z-index: 10;
+        }
+
+        .ios-page {
+            max-width: 100%;
+            min-height: 100vh;
+        }
+
+        /* iOS Large Title Navigation */
+        .ios-nav {
+            background: var(--glass-bg-solid);
+            border-bottom: 0.33px solid var(--ios-separator);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+        }
+
+        .ios-nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        .ios-nav-top {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-back-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--ios-blue);
+            font-size: 17px;
+            cursor: pointer;
+            padding: 0;
+            font-weight: 400;
+            letter-spacing: -0.41px;
+            transition: opacity 0.2s;
+        }
+
+        .nav-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .nav-back-btn:active {
+            opacity: 0.4;
+        }
+
+        .nav-left-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .nav-icon-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            background: none;
+            border: none;
+            color: var(--ios-blue);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .nav-icon-btn:hover {
+            background: var(--ios-grouped-bg);
+        }
+
+        .nav-icon-btn:active {
+            background: rgba(120, 120, 128, 0.18);
+            transform: scale(0.95);
+        }
+
+        /* iOS Sidebar */
+        .ios-sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--glass-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-right: 0.5px solid var(--separator);
+            z-index: 200;
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+
+        .ios-sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--overlay);
+            z-index: 199;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 0.5px solid var(--separator);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #000 0%, #434343 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo-text h1 {
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: -0.41px;
+            line-height: 1.3;
+        }
+
+        .logo-text p {
+            font-size: 13px;
+            color: var(--ios-secondary);
+            letter-spacing: -0.08px;
+            margin-top: 2px;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-label {
+            font-size: 13px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: -0.08px;
+            color: var(--ios-secondary);
+            padding: 0 20px 8px 20px;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            color: var(--ios-text);
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 400;
+            letter-spacing: -0.41px;
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+
+        .sidebar-nav-item:hover {
+            background: rgba(120, 120, 128, 0.08);
+        }
+
+        .sidebar-nav-item:active {
+            background: rgba(120, 120, 128, 0.15);
+        }
+
+        .sidebar-nav-item.active {
+            background: rgba(0, 122, 255, 0.08);
+            color: var(--ios-blue);
+            font-weight: 600;
+        }
+
+        .nav-item-badge {
+            min-width: 20px;
+            height: 20px;
+            background: var(--ios-red);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 0 6px;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            border-top: 0.5px solid var(--separator);
+            background: var(--glass-bg-solid);
+        }
+
+        .sidebar-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #34C759;
+        }
+
+        .status-text-label {
+            font-size: 13px;
+            color: var(--ios-secondary);
+            letter-spacing: -0.08px;
+        }
+
+        .btn-export {
+            width: 100%;
+            padding: 10px 16px;
+            background: var(--ios-text);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.24px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-export:hover {
+            opacity: 0.8;
+        }
+
+        .btn-export:active {
+            opacity: 0.6;
+            transform: scale(0.98);
+        }
+
+        /* Large Title */
+        .ios-large-title {
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            padding: 8px 0 16px 0;
+            line-height: 1.1;
+        }
+
+        /* Main Container */
+        .ios-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 32px 48px 32px;
+        }
+
+        /* iOS Grouped List (Settings style) */
+        .ios-list-header {
+            font-size: 13px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: -0.08px;
+            color: var(--ios-secondary);
+            padding: 24px 16px 8px 16px;
+        }
+
+        .ios-grouped-list {
+            background: var(--ios-card);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .ios-list-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 0.33px solid var(--ios-separator);
+            background: var(--ios-card);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .ios-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .ios-list-item:active {
+            background: var(--ios-grouped-bg);
+        }
+
+        .uni-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .uni-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #000 0%, #434343 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            flex-shrink: 0;
+        }
+
+        .uni-info {
+            flex: 1;
+        }
+
+        .uni-name {
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: -0.41px;
+            line-height: 1.3;
+        }
+
+        .uni-meta {
+            font-size: 15px;
+            color: var(--ios-secondary);
+            letter-spacing: -0.24px;
+            margin-top: 2px;
+        }
+
+        .uni-checkmark {
+            color: var(--ios-blue);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .ios-list-item.selected .uni-checkmark {
+            opacity: 1;
+        }
+
+        /* Platform Filter Buttons */
+        .platform-filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 0 4px;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--ios-card);
+            border: none;
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: -0.24px;
+            color: var(--ios-text);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .filter-chip:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .filter-chip:active {
+            transform: scale(0.96);
+        }
+
+        .filter-chip.active {
+            background: var(--ios-text);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        /* iOS Search Bar */
+        .ios-search {
+            margin-bottom: 16px;
+        }
+
+        .search-field {
+            width: 100%;
+            height: 36px;
+            background: var(--ios-grouped-bg);
+            border: none;
+            border-radius: 10px;
+            padding: 0 12px 0 36px;
+            font-size: 17px;
+            font-weight: 400;
+            letter-spacing: -0.41px;
+            color: var(--ios-text);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+            position: relative;
+        }
+
+        .search-field::placeholder {
+            color: var(--ios-secondary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--ios-secondary);
+            pointer-events: none;
+        }
+
+        .ios-search {
+            position: relative;
+        }
+
+        /* Post Grid - Ultra Clean */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 16px;
+        }
+
+        /* iOS Post Card - Authentic */
+        .post-card {
+            background: var(--ios-card);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .post-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .post-card:active {
+            transform: scale(0.98);
+        }
+
+        .post-header {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #000 0%, #434343 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .post-author-info {
+            flex: 1;
+        }
+
+        .post-author-name {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.24px;
+            line-height: 1.2;
+        }
+
+        .post-date {
+            font-size: 13px;
+            color: var(--ios-secondary);
+            letter-spacing: -0.08px;
+            margin-top: 2px;
+        }
+
+        .post-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background: var(--ios-grouped-bg);
+        }
+
+        .post-content {
+            padding: 16px;
+        }
+
+        .post-text {
+            font-size: 15px;
+            line-height: 1.4;
+            letter-spacing: -0.24px;
+            color: var(--ios-text);
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 16px;
+            padding: 12px 16px;
+            border-top: 0.33px solid var(--ios-separator);
+        }
+
+        .post-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: var(--ios-secondary);
+            font-weight: 500;
+        }
+
+        .post-stat svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Platform Badge */
+        .platform-badge {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .badge-instagram {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+        }
+
+        .badge-facebook {
+            background: #1877F2;
+            color: white;
+        }
+
+        .badge-twitter {
+            background: #1DA1F2;
+            color: white;
+        }
+
+        /* States */
+        .loading-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--ios-separator);
+            border-top-color: var(--ios-text);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 17px;
+            color: var(--ios-secondary);
+            font-weight: 400;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.26px;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            font-size: 17px;
+            color: var(--ios-secondary);
+            letter-spacing: -0.41px;
+        }
+
+        /* Bottom Navigation Bar - Mobile Only */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: var(--glass-bg-solid);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-top: 0.33px solid var(--ios-separator);
+            z-index: 100;
+            display: none;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .bottom-nav-content {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            flex: 1;
+            height: 100%;
+            text-decoration: none;
+            color: var(--ios-secondary);
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--ios-blue);
+        }
+
+        .bottom-nav-item svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .bottom-nav-item span {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: -0.08px;
+        }
+
+        .bottom-nav-badge {
+            position: absolute;
+            top: 8px;
+            right: 50%;
+            transform: translateX(12px);
+            min-width: 16px;
+            height: 16px;
+            background: var(--ios-red);
+            color: white;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            /* Show bottom nav on mobile */
+            .bottom-nav {
+                display: block;
+            }
+
+            /* Hide sidebar toggle button on mobile */
+            .nav-left-actions .nav-icon-btn {
+                display: none;
+            }
+
+            /* Add padding to container for bottom nav */
+            .ios-container {
+                padding-bottom: 88px;
+            }
+
+            /* Adjust iOS container padding */
+            .ios-container {
+                padding: 0 20px 88px;
+            }
+
+            .ios-nav-content {
+                padding: 0 20px;
+            }
+
+            .ios-large-title {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ios-page">
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- iOS Sidebar -->
+        <aside class="ios-sidebar" id="ios-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+                            <path d="M16 8L10 12L16 16L22 12L16 8Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10 20L16 24L22 20" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10 16L16 20L22 16" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h1>Yeshiva University</h1>
+                        <p>Research Intelligence</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-label">Overview</div>
+                    <a href="elegant-bento.html" class="sidebar-nav-item">Dashboard</a>
+                    <a href="analytics.html" class="sidebar-nav-item">Analytics</a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-label">Communications</div>
+                    <a href="internal-comms.html" class="sidebar-nav-item">Internal Comms</a>
+                    <a href="audience-segmentation.html" class="sidebar-nav-item">Audience</a>
+                    <a href="channels-management.html" class="sidebar-nav-item">Channels</a>
+                    <a href="moderation.html" class="sidebar-nav-item">Moderation</a>
+                    <a href="compliance-visual.html" class="sidebar-nav-item">Compliance</a>
+                    <a href="feedback.html" class="sidebar-nav-item">Feedback</a>
+                    <a href="insights.html" class="sidebar-nav-item">Insights</a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-label">Channels</div>
+                    <a href="social-posts.html" class="sidebar-nav-item active">
+                        <span>Social Media</span>
+                        <div class="nav-item-badge" id="sidebar-badge">0</div>
+                    </a>
+                    <a href="email-marketing.html" class="sidebar-nav-item">
+                        <span>Email Marketing</span>
+                        <div class="nav-item-badge">8</div>
+                    </a>
+                    <a href="digital-ads.html" class="sidebar-nav-item">
+                        <span>Digital Ads</span>
+                        <div class="nav-item-badge">19</div>
+                    </a>
+                    <a href="research-files.html" class="sidebar-nav-item">Website Intel</a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-label">Research</div>
+                    <a href="universities.html" class="sidebar-nav-item">Universities</a>
+                    <a href="research-files.html" class="sidebar-nav-item">Files</a>
+                    <a href="reports.html" class="sidebar-nav-item">Reports</a>
+                    <a href="settings.html" class="sidebar-nav-item">Settings</a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-status">
+                    <div class="status-dot"></div>
+                    <div class="status-text-label">Connected</div>
+                </div>
+                <button class="btn-export">Export Data</button>
+            </div>
+        </aside>
+
+        <!-- iOS Navigation Bar -->
+        <nav class="ios-nav">
+            <div class="ios-nav-content">
+                <div class="ios-nav-top">
+                    <div class="nav-left-actions">
+                        <button class="nav-icon-btn" onclick="toggleSidebar()" title="Menu">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <line x1="3" y1="12" x2="21" y2="12"/>
+                                <line x1="3" y1="6" x2="21" y2="6"/>
+                                <line x1="3" y1="18" x2="21" y2="18"/>
+                            </svg>
+                        </button>
+                        <button class="nav-back-btn" onclick="window.location.href='elegant-bento.html'">
+                            <svg width="13" height="21" viewBox="0 0 13 21" fill="none">
+                                <path d="M10.5 3L3 10.5L10.5 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Research
+                        </button>
+                    </div>
+                    <div class="nav-actions">
+                        <!-- Dark Mode Toggle -->
+                        <div class="theme-toggle" id="themeToggle" onclick="ThemeManager.toggleTheme()">
+                            <div class="theme-toggle-slider">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="5"/>
+                                    <line x1="12" y1="1" x2="12" y2="3"/>
+                                    <line x1="12" y1="21" x2="12" y2="23"/>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                    <line x1="1" y1="12" x2="3" y2="12"/>
+                                    <line x1="21" y1="12" x2="23" y2="12"/>
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <button class="nav-icon-btn" onclick="loadAllPosts()" title="Refresh">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 4 23 10 17 10"/>
+                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="ios-large-title">Social Media</div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="ios-container">
+
+            <!-- University Selection -->
+            <div class="ios-list-header">University</div>
+            <div class="ios-grouped-list">
+                <div class="ios-list-item selected" data-uni="yeshiva" onclick="selectUniversity('yeshiva')">
+                    <div class="uni-option">
+                        <div class="uni-icon">YU</div>
+                        <div class="uni-info">
+                            <div class="uni-name">Yeshiva University</div>
+                            <div class="uni-meta">New York, NY</div>
+                        </div>
+                    </div>
+                    <svg class="uni-checkmark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <div class="ios-list-item" data-uni="brandeis" onclick="selectUniversity('brandeis')">
+                    <div class="uni-option">
+                        <div class="uni-icon" style="background: linear-gradient(135deg, #003478 0%, #1a5fa8 100%);">BR</div>
+                        <div class="uni-info">
+                            <div class="uni-name">Brandeis University</div>
+                            <div class="uni-meta">Waltham, MA</div>
+                        </div>
+                    </div>
+                    <svg class="uni-checkmark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <div class="ios-list-item" data-uni="nyu" onclick="selectUniversity('nyu')">
+                    <div class="uni-option">
+                        <div class="uni-icon" style="background: linear-gradient(135deg, #57068c 0%, #8a2be2 100%);">NY</div>
+                        <div class="uni-info">
+                            <div class="uni-name">New York University</div>
+                            <div class="uni-meta">New York, NY</div>
+                        </div>
+                    </div>
+                    <svg class="uni-checkmark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <div class="ios-list-item" data-uni="columbia" onclick="selectUniversity('columbia')">
+                    <div class="uni-option">
+                        <div class="uni-icon" style="background: linear-gradient(135deg, #9BDDFF 0%, #5AB3E8 100%);">CU</div>
+                        <div class="uni-info">
+                            <div class="uni-name">Columbia University</div>
+                            <div class="uni-meta">New York, NY</div>
+                        </div>
+                    </div>
+                    <svg class="uni-checkmark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <div class="ios-list-item" data-uni="touro" onclick="selectUniversity('touro')">
+                    <div class="uni-option">
+                        <div class="uni-icon" style="background: linear-gradient(135deg, #1e4d2b 0%, #2d7a3e 100%);">TO</div>
+                        <div class="uni-info">
+                            <div class="uni-name">Touro University</div>
+                            <div class="uni-meta">New York, NY</div>
+                        </div>
+                    </div>
+                    <svg class="uni-checkmark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="ios-search">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" class="search-field" id="search-input" placeholder="Search" oninput="searchPosts()">
+            </div>
+
+            <!-- Analytics Summary -->
+            <div id="analytics-summary" style="display: none; margin-bottom: 24px;">
+                <div class="ios-list-header">Analytics Overview</div>
+                <div class="ios-grouped-list">
+                    <div class="ios-list-item" style="flex-direction: column; align-items: flex-start; padding: 16px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; width: 100%;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; font-weight: 700; color: var(--ios-text);" id="total-posts">0</div>
+                                <div style="font-size: 13px; color: var(--ios-secondary); margin-top: 4px;">Total Posts</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; font-weight: 700; color: #FF3B30;" id="total-likes">0</div>
+                                <div style="font-size: 13px; color: var(--ios-secondary); margin-top: 4px;">Total Likes</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; font-weight: 700; color: #007AFF;" id="total-comments">0</div>
+                                <div style="font-size: 13px; color: var(--ios-secondary); margin-top: 4px;">Total Comments</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; font-weight: 700; color: #34C759;" id="total-shares">0</div>
+                                <div style="font-size: 13px; color: var(--ios-secondary); margin-top: 4px;">Total Shares</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; font-weight: 700; color: #FF9500;" id="avg-engagement">0%</div>
+                                <div style="font-size: 13px; color: var(--ios-secondary); margin-top: 4px;">Avg Engagement</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform Filters -->
+            <div class="platform-filters">
+                <button class="filter-chip active" onclick="filterPlatform('all', event)">All Platforms</button>
+                <button class="filter-chip" onclick="filterPlatform('instagram', event)">Instagram</button>
+                <button class="filter-chip" onclick="filterPlatform('facebook', event)">Facebook</button>
+                <button class="filter-chip" onclick="filterPlatform('twitter', event)">Twitter</button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="loading-state">
+                <div class="spinner"></div>
+                <div class="loading-text">Loading Posts...</div>
+            </div>
+
+            <!-- Posts Grid -->
+            <div id="posts-container" class="posts-grid" style="display: none;"></div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <div class="empty-icon">📭</div>
+                <div class="empty-title">No Posts Found</div>
+                <div class="empty-text">Try selecting a different university or platform</div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Backend API configuration
+        const API_BASE = 'https://nomassi-1.onrender.com';
+
+        const UNIVERSITIES = {
+            yeshiva: {
+                name: 'Yeshiva University',
+                instagram: 'yeshiva_university',
+                facebook: 'yeshivauniversity',
+                twitter: 'yunews'
+            },
+            brandeis: {
+                name: 'Brandeis University',
+                instagram: 'brandeis',
+                facebook: 'brandeis',
+                twitter: 'brandeis'
+            },
+            nyu: {
+                name: 'New York University',
+                instagram: 'nyu',
+                facebook: 'nyu',
+                twitter: 'nyu'
+            },
+            columbia: {
+                name: 'Columbia University',
+                instagram: 'columbia',
+                facebook: 'columbia',
+                twitter: 'columbia'
+            },
+            touro: {
+                name: 'Touro University',
+                instagram: 'touro',
+                facebook: 'touro',
+                twitter: 'touro'
+            }
+        };
+
+        // REAL DATA: Facebook posts from Yeshiva University
+        const YESHIVA_FACEBOOK_POSTS = [{"id":"1224146033076894","university":"Yeshiva University","text":"Yeshiva University continues to rise as a national leader in higher education, combining academic excellence with Torah values. With record enrollment and growing demand, YU offers a close-knit, mentorship-driven experience that empowers students to achieve and lead. Guided by dedicated faculty and rooted in timeless values, YU graduates leave ready to make a lasting impact on the world.\n\nRead full story at https://bit.ly/4nqhO5i","image_url":"/api/files/facebook_data/yeshivauniversity/images/1224146033076894.jpg","original_image_url":"https://scontent-lga3-2.xx.fbcdn.net/v/t39.30808-6/565310131_1224146006410230_1019681949291278311_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=r1q60j_buBwQ7kNvwFqyjgC&_nc_oc=Adn5WVTEO0GxT0cszCEfhfeqqd5ZO43_B620rlZKB_BjsEPzJTv19txWlE-Zxgi42lw&_nc_zt=23&_nc_ht=scontent-lga3-2.xx&_nc_gid=4ZbOsJIiYvaQ935CnV9wew&oh=00_Afdfpltp3cwl1_-k4ehiAZpG1cbcBHvWLPIybww6TpwOOA&oe=6900AF89","video_url":null,"likes":30,"comments":2,"shares":0,"date":"2025-10-21T14:00:44.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02KA11555e42gd9cesNwhzYtjhWfJa63Y5gnxR7Zhxq7bkLHnVfrtjrFwaevXBbMwMl","engagement_rate":"0.21"},{"id":"1223615439796620","university":"Yeshiva University","text":"HAMAS IS STILL HOLDING AMERICANS HOSTAGE.\n\nOur alum Orna waits each day for her son’s return. Her words speak for every mother’s heart.\n\nWatch. Share. Demand their freedom.\n\n#FreeThemNow","image_url":"/api/files/facebook_data/yeshivauniversity/images/1223615439796620.jpg","original_image_url":"https://scontent-lga3-2.xx.fbcdn.net/v/t15.5256-10/566899658_1206987137930118_2479601933231795705_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=282d23&_nc_ohc=534129GwMNQQ7kNvwEQgYQb&_nc_oc=AdnkSFo_maC8pLP6EQEqHDdy_-Bn3GUw-OdRFOI4vAtmgoAPAcrUKqE9869p__c8ziM&_nc_zt=23&_nc_ht=scontent-lga3-2.xx&_nc_gid=4ZbOsJIiYvaQ935CnV9wew&oh=00_Aff1jjR5nU7G46oxbLO0LxDfucFeVrqVUwr0HqfdJ8dOkQ&oe=6900BD1B","video_url":null,"likes":127,"comments":10,"shares":12,"date":"2025-10-20T23:27:13.000Z","post_type":"Image","url":"https://www.facebook.com/reel/818215591125605/","engagement_rate":"1.07"},{"id":"1220152633476234","university":"Yeshiva University","text":"At Yeshiva University, we don’t stand on the sidelines — we stand proudly with Israel and lead with moral clarity, defending the foundational values of our nation and the free world. Grateful to @i24News_EN for highlighting this vital message.\n\nWatch the full segment here: https://tinyurl.com/rwwb3erz\n\n#StandWithIsrael #FightAntisemitism #AmericanValues #YeshivaUniversity","image_url":"/api/files/facebook_data/yeshivauniversity/images/1220152633476234.jpg","original_image_url":"https://scontent-lga3-1.xx.fbcdn.net/v/t15.5256-10/566771768_25042156648754547_1551345715764326430_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=282d23&_nc_ohc=V5mgXkfIJnUQ7kNvwFp9bwk&_nc_oc=AdmyxT_9ILbTqMO31IA2s9qwqM2rOl5925f07Qo9mQtyPjbVH-EHkPjHEpvuyncIq1A&_nc_zt=23&_nc_ht=scontent-lga3-1.xx&_nc_gid=4ZbOsJIiYvaQ935CnV9wew&oh=00_AfcjbV5ucu9qnCMbZHKO4Ea99tq70YvKaXcWx_xsVGAq1g&oe=6900B097","video_url":null,"likes":46,"comments":4,"shares":5,"date":"2025-10-16T23:54:51.000Z","post_type":"Image","url":"https://www.facebook.com/reel/2053256702082250/","engagement_rate":"0.40"},{"id":"1220090103482487","university":"Yeshiva University","text":"Mark your calendars! This year’s open houses will be Sundays, Nov 16 & 23.⠀\n⠀\n➡️  For more info and to register go to www.yu.edu/openhouse⠀\n⠀\n#YeshivaUniversity #Classof2030","image_url":"/api/files/facebook_data/yeshivauniversity/images/1220090103482487.jpg","original_image_url":"https://scontent-mia5-1.xx.fbcdn.net/v/t39.30808-6/565137407_1220090076815823_6147859191106951405_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=104&ccb=1-7&_nc_sid=127cfc&_nc_ohc=xzurX3JRd1cQ7kNvwHFBiuL&_nc_oc=AdnZHr3Zp65_9BsHQkU95UzfdxfF-ea5KnM2YF3CS2tbherHMGih7dcYzpgES0NvcQU&_nc_zt=23&_nc_ht=scontent-mia5-1.xx&_nc_gid=8DtJR9UPdSzLAXgVuLDc9A&oh=00_Aff80Q7jn74Xy0YuMGhM1hFaDefgBG1wTE7GlfYF2Eyl9w&oe=69008C0F","video_url":null,"likes":6,"comments":2,"shares":0,"date":"2025-10-16T21:44:16.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid06twCXxYJi1qZfTTogh7dh8NP8sXQo4UtMHD1k6Y3wjA6REthvq6fTou6tPQLefK7l","engagement_rate":"0.05"},{"id":"1219888580169306","university":"Yeshiva University","text":"We are profoundly saddened to learn of the sudden passing of a true Manhig Yisrael. Rabbi Moshe Hauer zt\"l was a dear friend and respected colleague whose unwavering devotion to the Jewish people and to Torah was exemplary and impactful.\n \nWe extend our deepest condolences to his family and to our partners in the Orthodox Union. May his memory be a blessing and his legacy continue to illuminate the path of Am Yisrael.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1219888580169306.jpg","original_image_url":"https://scontent-mia3-2.xx.fbcdn.net/v/t51.82787-15/565199040_18551519203032659_154524462406159582_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=Yr3jqyuLYY8Q7kNvwHO81cT&_nc_oc=Adn6gnKIfDU3gEJRLhfDGtMAfqVdUrpIgCGaE8NuYoNqV4LELbHPduVXukfiGnxZO28&_nc_zt=23&_nc_ht=scontent-mia3-2.xx&_nc_gid=8DtJR9UPdSzLAXgVuLDc9A&oh=00_Afcx4t-b8zPS7q6YPsR-LNRc01dyDv58AK-8ivWcTE0bog&oe=6900BA4D","video_url":null,"likes":56,"comments":10,"shares":0,"date":"2025-10-16T15:52:03.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0EHUXDzUqnmojTFijrBzYatieUyfUQ1R9XXKLxDJ13zjBsithsjfZkwAHXRenMFDEl","engagement_rate":"0.44"},{"id":"1217435407081290","university":"Yeshiva University","text":"After attending President Trump’s address to the Knesset, Rabbi Dr. Ari Berman, President of Yeshiva University, spoke with Maria Bartiromo, Mornings with Maria on Fox Business about the release of the final 20 living hostages — a moment filled with both joy and reflection.\n \nPresident Berman shared a message of gratitude and commitment, emphasizing that leadership in times of crisis means embodying faith, unity, and moral courage. His words remind us that every act of redemption, every step toward peace, carries the weight of our shared values and collective hope.\n \n🎥 Watch Rabbi Berman’s complete interview here. https://www.foxbusiness.com/video/6382684462112","image_url":"/api/files/facebook_data/yeshivauniversity/images/1217435407081290.jpg","original_image_url":"https://scontent-mia3-2.xx.fbcdn.net/v/t15.5256-10/566221151_692750703853400_757956742915088633_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=103&ccb=1-7&_nc_sid=282d23&_nc_ohc=LopUJH_LYTYQ7kNvwHFGu54&_nc_oc=AdmaHvBkSJWniBoVq-emebD7p2vCBrFIMF7HBfzH_Xzen0Y6nfw9TCQRBeLPxTBZeNk&_nc_zt=23&_nc_ht=scontent-mia3-2.xx&_nc_gid=8DtJR9UPdSzLAXgVuLDc9A&oh=00_AfcQuCOt-ITy1Hobjb_vfnCL4FpnV571_o9vaX0gsHXR-g&oe=6900BE0C","video_url":null,"likes":22,"comments":4,"shares":3,"date":"2025-10-13T20:15:11.000Z","post_type":"Image","url":"https://www.facebook.com/reel/1340003994451309/","engagement_rate":"0.21"},{"id":"1217083827116448","university":"Yeshiva University","text":"It is with great hope and gratitude to Hashem that we breathe a sigh of relief. To the end of conflict and with prayers for peace we say - Amen.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1217083827116448.jpg","original_image_url":"https://scontent-lga3-3.xx.fbcdn.net/v/t39.30808-6/561444310_1217083813783116_2386276368841602093_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=dkdJ7R3T3QIQ7kNvwH8xH-J&_nc_oc=AdmUFlhjB-5DDva0r6ftCl3U_ouxpu32Znyk6y284qI96bOJ-d7BREb3ePDHOpkfDoM&_nc_zt=23&_nc_ht=scontent-lga3-3.xx&_nc_gid=Xyq0AttDjh4zKV5zhupioQ&oh=00_AfeploHN7WfpcSHB7lCiSUzQHJM33ACm3PQyRJEgzyeC9Q&oe=6900A002","video_url":null,"likes":60,"comments":6,"shares":3,"date":"2025-10-13T11:32:27.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0Q1SG2Zw1thLLWmtQ5FYyK2BUGfkPSVinAcph5zpKjPirArwyeUoyJfV1u4dMt2Mel","engagement_rate":"0.48"},{"id":"1213499297474901","university":"Yeshiva University","text":"We’re extremely excited to announce that we will be hosting Dr. Sharona Nazarian @sharona4bh, the Mayor of Beverly Hills, CA, for an insightful discussion-based event. \n\nDr. Nazarian is the first Jewish Iranian American woman to serve as Mayor of Beverly Hills and has a deep background in Jewish and Israel activism. \n\nThe event is open to anyone (within YU and general public). \n\n🗓️ Monday, October 20\n🕕 6-8:30 PM\n📍Beren Campus, 215 Lexington Ave, Room 501 (Boardroom) \n\n🔗 RSVP at the link in our bio or at https://bit.ly/48esboO","image_url":"/api/files/facebook_data/yeshivauniversity/images/1213499297474901.jpg","original_image_url":"https://scontent-lga3-2.xx.fbcdn.net/v/t39.30808-6/558679165_1213499254141572_3497246301762873386_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=cnREeWl1aSUQ7kNvwEneooa&_nc_oc=Adng1gdJ3OnbFEezS4-27VCV4VCPJsDA1RTyaJdjykYtskqpkZthLpZ7WMA3-upY0_U&_nc_zt=23&_nc_ht=scontent-lga3-2.xx&_nc_gid=Xyq0AttDjh4zKV5zhupioQ&oh=00_Afc5m9QQjCPP8-HTS3VMMTyUgDM9rhQjf5gSfGja8uiv7g&oe=6900BDF2","video_url":null,"likes":38,"comments":4,"shares":1,"date":"2025-10-09T14:00:20.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0hp1zSnx7dD1BMzf5mm11tVG9VWSQkGqxmJEWMa2SCcLNZxdEndPE1fVVjPgJ2Zepl","engagement_rate":"0.29"},{"id":"1210746001083564","university":"Yeshiva University","text":"This Sukkot, may our tefillos for peace and unity be answered—for Eretz Yisrael, for our communities, and for all of Klal Yisrael. Chag Sameach from Yeshiva University.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1210746001083564.jpg","original_image_url":"https://scontent-lga3-2.xx.fbcdn.net/v/t39.30808-6/557533637_1210745974416900_9052162350822055655_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_ohc=YOLWCJ2boGoQ7kNvwEX9EY-&_nc_oc=AdlWskH27aXBctXeP1i89F4FemCp5vFLnvnbtJKid0bgLqWg4exANc7cyKNuU8Pwvhg&_nc_zt=23&_nc_ht=scontent-lga3-2.xx&_nc_gid=Xyq0AttDjh4zKV5zhupioQ&oh=00_AfcYz0wtMk8WudHvnj6yyXYyTHJgVMan5a2IUk7bEtkNzQ&oe=6900A3A5","video_url":null,"likes":45,"comments":11,"shares":5,"date":"2025-10-06T13:39:47.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02a4WRMPZb2Rgvw81UibuCkYeE56o4amLyqNYiDES2eANBYAkbwuovG6nPrHi244xBl","engagement_rate":"0.44"},{"id":"1207922068032624","university":"Yeshiva University","text":"As we reflect two years later, we continue to mourn the lives lost on Oct 7 and pray for the safe return of our hostages and the safety of our brave soldiers and those still suffering. Our community came together in remembrance and strength, reminding us that while tragedy marks us, it is unity that defines us and faith that carries us forward toward redemption.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1207922068032624.jpg","original_image_url":"https://scontent-atl3-2.xx.fbcdn.net/v/t15.5256-10/558348868_652130314374238_7976032931505286014_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=105&ccb=1-7&_nc_sid=7965db&_nc_ohc=Ur8LVzzhDxsQ7kNvwG-kknb&_nc_oc=Adllr69QXnXljQ93xS6DmNSSwM2muY_jOv-Z6JletJL-ADFUQZYCVQwezBMEFGqvMIo&_nc_zt=23&_nc_ht=scontent-atl3-2.xx&_nc_gid=7K0lBl4cXKjuuKNienZgkg&oh=00_Afep0651R6q4niCcz2qInQcAasqlPPitMmmg3JVxIAG_xg&oe=6900B78D","video_url":null,"likes":22,"comments":6,"shares":2,"date":"2025-10-03T14:00:58.000Z","post_type":"Image","url":"https://www.facebook.com/reel/4208794799366718/","engagement_rate":"0.21"},{"id":"1206186884872809","university":"Yeshiva University","text":"We were once again honored that Rabbi Dr. Ari Berman delivered the annual Hausman/Stern Kinus Teshuva Lecture and shared words of reflection and inspiration as we prepare for Yom Kippur.\n\n“May all of humanity experience God’s love and blessing and may each of us be inscribed for a year of peace, prosperity and purpose.”\n\nGmar Chatima Tova!","image_url":"/api/files/facebook_data/yeshivauniversity/images/1206186884872809.jpg","original_image_url":"https://scontent-atl3-2.xx.fbcdn.net/v/t15.5256-10/558955010_782601561225111_6932593252593893565_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=282d23&_nc_ohc=T_iT3PQ1UUkQ7kNvwFQKZkk&_nc_oc=Admrwjpfa_MXqx53FlPEOhC7nZ58rUrVYqJpHbJTf4e3TQ-VHQmIm6idzqIIAsBNEOc&_nc_zt=23&_nc_ht=scontent-atl3-2.xx&_nc_gid=7K0lBl4cXKjuuKNienZgkg&oh=00_Aff4PKsfGg31IO6bsgQjCTcK3UrSRJpeNQ9Mlfm3E2pTNA&oe=69009ACE","video_url":null,"likes":21,"comments":4,"shares":0,"date":"2025-10-01T16:50:27.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/videos/1535008184196171/","engagement_rate":"0.17"},{"id":"1206058444885653","university":"Yeshiva University","text":"Best wishes for a meaningful Yom Kippur and an easy fast. May we all be zoche to a good year, safety in Israel and the return of the hostages. Gmar Chasima Tova!","image_url":"/api/files/facebook_data/yeshivauniversity/images/1206058444885653.jpg","original_image_url":"https://scontent-atl3-3.xx.fbcdn.net/v/t39.30808-6/557752142_1206058418218989_5350285817081474894_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_ohc=mphhSrTmgqkQ7kNvwFnUPTF&_nc_oc=AdmlwwM-eSalPmrXixhAoqqMMiLwmV6_c0r7gc9_P8EWgahQnxJJHYK2PxdNrXtikRQ&_nc_zt=23&_nc_ht=scontent-atl3-3.xx&_nc_gid=7K0lBl4cXKjuuKNienZgkg&oh=00_Afe36_BohQ7S3Sjf9M596Vd7FcZZZpNt8AVy73NgCs1rrA&oe=6900A653","video_url":null,"likes":640,"comments":7,"shares":35,"date":"2025-10-01T14:00:40.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0z3r3BqRbiwaZZq8gDFmayPXN1bcgs9P4UBuaiBwmqJfRteqzNStZ3AZhRKyCFB4pl","engagement_rate":"4.78"},{"id":"1198461045645393","university":"Yeshiva University","text":"Our prayers are with those in Israel and around the world. Wishing our YU families a sweet and meaningful new year, filled with health, strength and unity.\n\nשנה טובה ומתוקה\nShana Tova U’Metuka","image_url":"/api/files/facebook_data/yeshivauniversity/images/1198461045645393.jpg","original_image_url":"https://scontent-mia5-2.xx.fbcdn.net/v/t39.30808-6/552586368_1198461018978729_1970948805648127346_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=100&ccb=1-7&_nc_sid=127cfc&_nc_ohc=3AUPLYnJnJYQ7kNvwGNg9XZ&_nc_oc=AdkEwZ2-0vpEocbC_Lhu9q5OXeoV1I6qkXwb5m7YsQ5k1BrTiGv2mzzV0DPoSYHKM6g&_nc_zt=23&_nc_ht=scontent-mia5-2.xx&_nc_gid=18TO7bQthAcWv37RR5V9IQ&oh=00_AffXcBIrQkN3mWzCwZSA7LXiToFGeCp6MkA0vv7kINj_uw&oe=6900BC81","video_url":null,"likes":51,"comments":10,"shares":6,"date":"2025-09-22T17:19:33.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid036Gg74zXhniCJ6oeGeP9o3GJ8oRpD761Gc5U4tqW6nEhiT7xhnk83RUZABpUkioMFl","engagement_rate":"0.49"},{"id":"1197583995733098","university":"Yeshiva University","text":"This past week, Yeshiva University hosted a moving Oct. 7 memorial on the Campus. The evening was filled with heartfelt words from students, President Berman, our Roshei Yeshiva, and faculty, all sharing messages of strength and resilience. We were especially touched by Irit Ben Arye, who shared the heartbreaking story of her husband, Haim, who courageously drove a busload of survivors out of Kibbutz Be’eri on that tragic day.","image_url":"","original_image_url":"","video_url":null,"likes":35,"comments":2,"shares":3,"date":"2025-09-21T16:23:06.000Z","post_type":"Text","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0E8jp31jyMz5q6t2unQtGFMosRjRubUSbB73mYyfxMdf2XuNkonAqtiwwGbpsyBJ4l","engagement_rate":"0.29"},{"id":"1197486442409520","university":"Yeshiva University","text":"Grab the Rosh Hashana edition of the The Benjamin and Rose Berger Torah To-Go, an inspiring compilation of essays and drashot. Pick it up at your local shul, view it online or download.\n\nSee link in bio to read or download\nhttps://www.yutorah.org/togo/roshhashana","image_url":"/api/files/facebook_data/yeshivauniversity/images/1197486442409520.jpg","original_image_url":"https://scontent-mia3-2.xx.fbcdn.net/v/t39.30808-6/550520693_1197486399076191_6343730077519489446_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_ohc=uTqdK-WTtpAQ7kNvwE7bVWI&_nc_oc=Adlb17TaDWASMN46AgkGQm79z-IHJOw31lct3qoWygiWTc4ogvKIpta-hYppeXconvE&_nc_zt=23&_nc_ht=scontent-mia3-2.xx&_nc_gid=18TO7bQthAcWv37RR5V9IQ&oh=00_AfeO5E7L0L4qv9rx7I9uJ-MKiukmK9m9QN2_MR_IX2EsCQ&oe=6900AADF","video_url":null,"likes":5,"comments":3,"shares":0,"date":"2025-09-21T14:00:40.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02wdjC9MZVMVFW73kaDzgNL4jSm9se6ZKddsaD9YcLBov6HzxA7wwH6oGzLGXydrTpl","engagement_rate":"0.05"},{"id":"1195209815970516","university":"Yeshiva University","text":"Yesterday, the YU community gathered for an evening of prayer and unity as we approach two years to the October 7th massacre.\n\nOur vigil was powerful, but it does not stand alone. As President Berman told CBS New York, \"Every day we remember what happened on Oct 7. Every day we are vigilant to fight against hate.\"","image_url":"/api/files/facebook_data/yeshivauniversity/images/1195209815970516.jpg","original_image_url":"https://scontent-sea5-1.xx.fbcdn.net/v/t15.5256-10/548735401_1318852496253807_9045203965981613725_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=103&ccb=1-7&_nc_sid=7965db&_nc_ohc=-EspxZB9a6cQ7kNvwFFvfR7&_nc_oc=AdlNJTT4fMM4XWmcsPyTrvMfC6EouKkEN6r1zHGbXQch33Ibjrsyth4XfY7FfJAeXkg&_nc_zt=23&_nc_ht=scontent-sea5-1.xx&_nc_gid=aJrILV5t6dTuP-NqqYh2-g&oh=00_Afd5CzewcCad1ScaKAlBctgnvPZhtxFZS-aJvlQdAUP7hw&oe=69009EBC","video_url":null,"likes":33,"comments":3,"shares":3,"date":"2025-09-18T23:01:03.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/videos/1092687479695869/","engagement_rate":"0.28"},{"id":"1194900536001444","university":"Yeshiva University","text":"Check out the latest view from YU!\n\n➡️ Rabbi Dr. Ari Berman led the U.S. Senate in prayer.\n➡️ Fall Semester 2025 Kicks Off⠀\n➡️ Katz School Expands Footprint in Midtown Manhattan\n➡️ YU Coach counsels NY Yankees draft pick \n⠀\nRead more at yu.edu/viewfromyu","image_url":"/api/files/facebook_data/yeshivauniversity/images/1194900536001444.jpg","original_image_url":"https://scontent-sea1-1.xx.fbcdn.net/v/t39.30808-6/548882692_1194900502668114_6594708219291442609_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_ohc=SsYLAs34PKgQ7kNvwFtnrkd&_nc_oc=AdlsNgnCpLAjm9F_YwmsNPk0-T8WmYm3fpVy5WdUMj0gZ9a4_SbFWllQPpYsGcp-DI8&_nc_zt=23&_nc_ht=scontent-sea1-1.xx&_nc_gid=aJrILV5t6dTuP-NqqYh2-g&oh=00_Afe0feONmAfri6R5e_SJNnWfBfBwY7EN5NTFMUH3gMLvYg&oe=69009B08","video_url":null,"likes":10,"comments":2,"shares":1,"date":"2025-09-18T14:00:31.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid038Ayf8vTBHArefsEZFBfCBU4d3UkVoCDZNtbduBcrD6ag3kanw7GKfawTELvQEn8ql","engagement_rate":"0.09"},{"id":"1194197586071739","university":"Yeshiva University","text":"This fall, the Shevet Glaubach Center for Career Strategy and Professional Development hosted two major recruiting events: the Fall 2025 Tech Career Fair and the Fall 2025 Finance & Accounting Fair. \n\nAt the Tech Career Fair, 230 students connected with top employers — including Amazon, BlackRock, Citi, Goldman Sachs, Intelligent Traffic Control, MarketAxess, MongoDB, Uveye, and PwC — to explore technical internships and full-time roles for Summer 2026. \nAt the Finance & Accounting Fair, nearly 300 students engaged with 26 employers, 63 professionals, and 40 alumni, including representatives from Deloitte, EY, Goldman Sachs, Grant Thornton, J.P. Morgan, and KPMG, while exploring career paths and opportunities for Summer/Winter 2026 internships. \n\nA huge thank you to our students, employers, and alumni for making these events impactful. Together, we help students turn opportunities today into career steps for tomorrow.","image_url":"","original_image_url":"","video_url":null,"likes":49,"comments":2,"shares":1,"date":"2025-09-17T17:39:58.000Z","post_type":"Text","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid049VHe4dMHppCepVutXC9f2NNDbLDkhG3mp3jhugfpSYKu23sNMMJFJpAMCmGrUKrl","engagement_rate":"0.35"},{"id":"1194138369410994","university":"Yeshiva University","text":"✨ What an unforgettable night of music and inspiration ✨⠀\n⠀\nAcclaimed Israeli singer-songwriter Akiva lit up the stage at the United Palace Theatre in Upper Manhattan, joined by international music icon Idan Raichel.⠀\n⠀\nThe concert brought together thousands from across New York’s Jewish community for a spiritually uplifting evening in Elul — preparing us for the Yamim Noraim through song. 🎶🙏⠀\n⠀\nThank you to everyone who joined us for this landmark celebration of music, ruach, and community.⠀\n\nעקיבא - Akiva⠀\nעידן רייכל - Idan Raichel","image_url":"/api/files/facebook_data/yeshivauniversity/images/1194138369410994.jpg","original_image_url":"https://scontent-ord5-1.xx.fbcdn.net/v/t15.5256-10/548655246_2000411254030247_7154267026855874517_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=108&ccb=1-7&_nc_sid=7965db&_nc_ohc=p58hc0rnV4YQ7kNvwH-AMiV&_nc_oc=AdmFyU_j_Jx4d8REZ3YIO3dOn1xfOQHeHJ0SdE0tbiX0CwLwa-fAT4fw0-Ofx94_N5o&_nc_zt=23&_nc_ht=scontent-ord5-1.xx&_nc_gid=NkNw_qWduT_ASzmSpaFTcQ&oh=00_AfdzpJ8-2hD-lB9_vSjN1LhukGc-BERB07IC3y3UYPPVXw&oe=6900AFD7","video_url":null,"likes":14,"comments":3,"shares":1,"date":"2025-09-17T16:06:06.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/videos/1128630832560453/","engagement_rate":"0.13"},{"id":"1193455039479327","university":"Yeshiva University","text":"Rabbi Penner led our Yeshiva community in heartfelt Slichos — uplifting us with words of chizuk and the power of tefillah together as we get ready for the Yamim Noraim.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1193455039479327.jpg","original_image_url":"https://scontent-ord5-1.xx.fbcdn.net/v/t15.5256-10/548958577_758297013757156_340915869638155120_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=7965db&_nc_ohc=hOPEIhjFbfMQ7kNvwG0tkd7&_nc_oc=Adm4yKCDo9hftrJPHAOajRJA7WG-PgchbfJ--JQQJUmFFOHeZyy0A7hkl-WYTOefSAQ&_nc_zt=23&_nc_ht=scontent-ord5-1.xx&_nc_gid=NkNw_qWduT_ASzmSpaFTcQ&oh=00_Afedkqw3Xg3HkVHk1vm3J4vsqv5uNH2XWq5X7SOCxBZEzQ&oe=6900A4E6","video_url":null,"likes":26,"comments":3,"shares":1,"date":"2025-09-16T20:52:34.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/videos/2014058566001624/","engagement_rate":"0.21"},{"id":"1192618339562997","university":"Yeshiva University","text":"TOMORROW! Don’t miss Rabbi Yehuda Halpert speak on his book, Speaking to an Empty Shul: Timeless Lessons from Unprecedented Times (online)!\n\nRegister: yu.edu/emptyshul","image_url":"/api/files/facebook_data/yeshivauniversity/images/1192618339562997.jpg","original_image_url":"https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/548115327_1192618279563003_2586232223284958935_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=102&ccb=1-7&_nc_sid=127cfc&_nc_ohc=Xe_Ldz8DetYQ7kNvwHRA1mb&_nc_oc=AdkRJJPhTxA17zKdTJ0bE3kGMSR4zABroepyJxKOwnepwE3HBsVJKF1B7H71FrBP0zw&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=NkNw_qWduT_ASzmSpaFTcQ&oh=00_AfexQ_sYEhQ_axgHn_KtK-KdugweHIvVvKov7ZxGCW5uMQ&oe=690096C4","video_url":null,"likes":9,"comments":3,"shares":0,"date":"2025-09-15T20:45:07.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0jRHPMsVeTGoYXBthNtWXRFeRV2YGMU6obNeF4UMoxeSr3taD7PLRxUsycAw76oRSl","engagement_rate":"0.08"},{"id":"1192583536233144","university":"Yeshiva University","text":"✨ What an unforgettable night of music and inspiration ✨\n\nAcclaimed Israeli singer-songwriter Akiva lit up the stage at the United Palace Theatre in Upper Manhattan, joined by international music icon Idan Raichel.\n\nThe concert brought together thousands from across New York’s Jewish community for a spiritually uplifting evening in Elul — preparing us for the Yamim Noraim through song. 🎶🙏\n\nThank you to everyone who joined us for this landmark celebration of music, ruach, and community.","image_url":"","original_image_url":"","video_url":null,"likes":50,"comments":3,"shares":3,"date":"2025-09-15T19:34:35.000Z","post_type":"Text","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02Lvsofz3LaTPfvN27oUUgSwCNMxS8LDhPdyMVieF2wGraNKmThRp5JUJJqCaBoSgsl","engagement_rate":"0.39"},{"id":"1192332252924939","university":"Yeshiva University","text":"The new Rabbi Norman Lamm Digital Archive, launched in cooperation with Yeshiva University, is now live. Rabbi Lamm, who served as YU’s third president, was a leading figure of Modern Orthodoxy. This unprecedented resource opens thousands of his sermons, lectures, essays, and letters to the public for the first time, celebrating YU’s proud heritage and making his teachings freely accessible to rabbis, educators, students, and lay leaders everywhere.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1192332252924939.jpg","original_image_url":"https://scontent-atl3-2.xx.fbcdn.net/v/t15.5256-10/548398791_3320533761437647_2693825649196226236_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=7965db&_nc_ohc=SNnhDfo4m68Q7kNvwGSQcXX&_nc_oc=AdkQMS_UYtYrrzYrdOwrU0yp27F8gIgv8J35oNazTez2JlPmvgh43bwQzz-Zhjj_y3w&_nc_zt=23&_nc_ht=scontent-atl3-2.xx&_nc_gid=oW5JaAr7FF3pPwwUQrDXEw&oh=00_AfdEfiYsFWaXsW8M-NLWbuPl_v_3a2QzgpUmAKu9HGNndw&oe=6900BB62","video_url":null,"likes":22,"comments":2,"shares":3,"date":"2025-09-15T13:01:59.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/videos/1468404170951774/","engagement_rate":"0.20"},{"id":"1189381556553342","university":"Yeshiva University","text":"We remember. We Honor.\nOn this day, we honor the memory of those lost on September 11 and the heroes who rose in the face of tragedy. \n\nAs new acts of hatred unfold across our world, we choose hope over fear, unity over hate. May their memory strengthen our resolve to build a future of peace, compassion, and moral clarity.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1189381556553342.jpg","original_image_url":"https://scontent-atl3-3.xx.fbcdn.net/v/t51.82787-15/545015752_18544036231032659_5352968931347137338_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_ohc=k1XlXC_DIAUQ7kNvwFPTDHs&_nc_oc=AdmQJN3HfdXt4eSTbPrZXv5Y32bOJDNvG0Vs_th9zSQkTp_JMRfgCLkvyy164tPqnrs&_nc_zt=23&_nc_ht=scontent-atl3-3.xx&_nc_gid=oW5JaAr7FF3pPwwUQrDXEw&oh=00_AfeW5iuDmCyVop4pjKwr_aXz-pOG2l8VrbHy1NLYtxOAXg&oe=6900AE37","video_url":null,"likes":108,"comments":10,"shares":10,"date":"2025-09-11T22:45:23.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid03H9CjQ49UJyn1Yxbddm15SeXULQAMFcDXr69ygh5rJJcqZJLH3i4hRaB5afU7aStl","engagement_rate":"0.92"},{"id":"1186604766831021","university":"Yeshiva University","text":"ה׳ הוא נחלתם, וינוחו על משכבו לעולם\nOur hearts break for the families of those murdered, for the injured and for all affected by this morning’s senseless act of terrorism.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1186604766831021.jpg","original_image_url":"https://scontent-dfw5-2.xx.fbcdn.net/v/t39.30808-6/544918544_1186604720164359_3971898597447978328_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=104&ccb=1-7&_nc_sid=127cfc&_nc_ohc=pDRAo2J434IQ7kNvwH61B3N&_nc_oc=Adngy_gnKRBJKribwDnJtW1rbdLrjYSpQNL7jf7xrUjRJqz712kqFLh9Hy2p7UIL8N4&_nc_zt=23&_nc_ht=scontent-dfw5-2.xx&_nc_gid=BVUC2yZqz9HP0vFulr5FKA&oh=00_AfdzCCMIqv3iyp2fIVoPjQark2wKrkW2B16Bd_AD2ZxvCw&oe=6900B1D4","video_url":null,"likes":52,"comments":9,"shares":3,"date":"2025-09-08T16:43:31.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02u1i2iUcJuWqR3JHHi8Udm7ffxfAGtVvJvdrhm47MzGdEEph4HYLdzu4uVnRn6rUgl","engagement_rate":"0.45"},{"id":"1186563220168509","university":"Yeshiva University","text":"We are humbled to announce that on Wednesday, the YU President Rabbi Dr. Ari Berman will deliver the opening blessing to the United States Senate. As the Jewish new year fast approaches, he will convey a spirit of unity and reflection about the purpose of this great union. We thank our dear friend Senator John Fetterman for the invitation.\n\nYou can view the event live at https://bit.ly/47srYhk","image_url":"/api/files/facebook_data/yeshivauniversity/images/1186563220168509.jpg","original_image_url":"https://scontent-dfw5-2.xx.fbcdn.net/v/t39.30808-6/544835560_1186563160168515_4650449931055540955_n.jpg?stp=dst-jpg_p180x540_tt6&_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_ohc=mpMFPXDqEz4Q7kNvwFf8-ID&_nc_oc=Adl6SGl4k0RcYW6AZh0yGeL2tSHLmqWvJPaBmzeZd31rERfWNp-HWMH9NAWRh5c1k1w&_nc_zt=23&_nc_ht=scontent-dfw5-2.xx&_nc_gid=BVUC2yZqz9HP0vFulr5FKA&oh=00_AfffNJ-8kXI8zNyoiQcyKVEMJhldopP4oPZ-_CnXOMdKNA&oe=6900A700","video_url":null,"likes":316,"comments":16,"shares":34,"date":"2025-09-08T15:37:35.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02od3FkEoYyxrfFcED2Nc1YTkZUwtqoFGDSnEqQt6Ws5ziC8MVQ6rTdx9TjWd5L1ZAl","engagement_rate":"2.67"},{"id":"1186499250174906","university":"Yeshiva University","text":"Don’t miss Rabbi Yehuda Halpert speak on his book, Speaking to an Empty Shul: Timeless Lessons from Unprecedented Times (online)!\n\nRegister: yu.edu/emptyshul","image_url":"/api/files/facebook_data/yeshivauniversity/images/1186499250174906.jpg","original_image_url":"https://scontent-dfw5-2.xx.fbcdn.net/v/t39.30808-6/544726158_1186499206841577_3306924934904139165_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=0csad3N_ycUQ7kNvwEYiMlg&_nc_oc=AdldCAHn6JmSEwPzEuuByUCgi_EPrcSBrN-HqaI8cXRq94-zbklpevMTiOwgzLajQ4M&_nc_zt=23&_nc_ht=scontent-dfw5-2.xx&_nc_gid=BVUC2yZqz9HP0vFulr5FKA&oh=00_AfdZW3mGn8D1aMWvKEqtRLp-zQ5Tl_qv06pdU6FZ-PeuQQ&oe=69008BCB","video_url":null,"likes":14,"comments":2,"shares":1,"date":"2025-09-08T14:00:32.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02ryemuPjwLVSVoANj66TrQRcZrxpGmYRjiLL5W14zTcYWo14eHEKSMg4NEsWrUyc7l","engagement_rate":"0.12"},{"id":"1184208890403942","university":"Yeshiva University","text":"\"Your job is not to save the world at 19. It is to become excellent... and when the opportunity comes in 10, 20, 30 years you will be ready to change the world.\"\n\nRabbi Berman had an incredible conversation with @jonathanhaidt at our opening Great Conversation Series hosted at Yeshiva University. As always, Dr. Haidt’s words combine erudition, clarity, and great insight on the most compelling issues of the day.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1184208890403942.jpg","original_image_url":"https://scontent-dfw5-2.xx.fbcdn.net/v/t39.30808-6/541473185_1184208853737279_8270766047451612949_n.jpg?stp=dst-jpg_p180x540_tt6&_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=Tm3jThcqXdwQ7kNvwHRu_xs&_nc_oc=AdnaX3myp9k4VOvT7KGoKeveyzomAJXVs_M1wsHwH2sZrg8O8HrIMAsR5GLz5NLl4k8&_nc_zt=23&_nc_ht=scontent-dfw5-2.xx&_nc_gid=6YdaloJ-i7AmsHw41fCHjQ&oh=00_AfduXzPXKSlJ2WMRON8pWIjI_KAKEfwpPQSlDTWVwGWjYw&oe=69009A18","video_url":null,"likes":27,"comments":2,"shares":0,"date":"2025-09-05T14:29:40.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0Fk7YLJ3H7r1UwvKgDps6hQ5SA8gW6kcFav6WCeHHPtnq8Ny4j48b5GhCYAUBqCkkl","engagement_rate":"0.19"},{"id":"1181757560649075","university":"Yeshiva University","text":"Acclaimed Israeli singer-songwriter Akiva is headlining a landmark concert at the United Palace Theatre in Upper Manhattan on Sunday, September 14, 2025, together with international music icon Idan Raichel 🎶✨\n\nAffiliated with Yeshiva University and its alumni network, this promises to be one of the most anticipated cultural events in recent memory for New York’s Jewish community. Taking place during Elul, the concert will be a spiritually uplifting experience—an inspiring way to prepare for the Yamim Noraim. ✨🙏\n\n🎟 Tickets are now available: yu.edu/akiva\n🎓 Special YU Discount for Students, Staff & Alumni. Email Akiva@yu.edu for details and promo code.\n\n@akiva.official @idanraichel @ordavidson @ely.katz @davidicro","image_url":"/api/files/facebook_data/yeshivauniversity/images/1181757560649075.jpg","original_image_url":"https://scontent-dfw5-1.xx.fbcdn.net/v/t51.82787-15/541617857_18541903723032659_1822941953234692694_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=101&ccb=1-7&_nc_sid=127cfc&_nc_ohc=U6fbZq6yG_oQ7kNvwHbp29Q&_nc_oc=Adm8ymmlqornu0cjZbuLQ9AXLnCkTAM4Kt87hQzIW7QLTGtpqUxcS69pc98l39OnUZE&_nc_zt=23&_nc_ht=scontent-dfw5-1.xx&_nc_gid=6YdaloJ-i7AmsHw41fCHjQ&oh=00_AfcZR2hMqjJsr2R3Sjjh141MqRWsGQ_W0Opqu3uyGqMLWA&oe=6900BD49","video_url":null,"likes":60,"comments":4,"shares":1,"date":"2025-09-02T15:16:17.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02SbP4aqvWxESwACppwrkcwqLWVtQh6YVL5y6Z3UH7tY98jLKHCzP4YKZjUqaL1Z5tl","engagement_rate":"0.44"},{"id":"1178270374331127","university":"Yeshiva University","text":"Check out the latest view from YU!\n\n➡️ Yeshiva University Reaffirms Enduring Support for Israel\n➡️ YU Graduate School Early Assurance Program⠀\n➡️ Yeshiva University in Israel Opens Doors to IDF Reservists\n➡️ Four Cardozo Alumni Named to Top Entertainment Attorney Lists\n⠀\nRead more at yu.edu/viewfromyu","image_url":"/api/files/facebook_data/yeshivauniversity/images/1178270374331127.jpg","original_image_url":"https://scontent-dfw5-3.xx.fbcdn.net/v/t39.30808-6/540900613_1178270320997799_3791021315364302801_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=V4P8GnyeuvEQ7kNvwEMCKUk&_nc_oc=Adkder2izE7b-TnfUMDgYVGx-LIwaUX7eaPGfcWXDz96KJTZCwJJeZr-fquAHVTn3Rs&_nc_zt=23&_nc_ht=scontent-dfw5-3.xx&_nc_gid=6YdaloJ-i7AmsHw41fCHjQ&oh=00_Afci6O145VnwLsUmaTwIw6C_Ytit6nAhwobqiEG__J3lbg&oe=69008BF6","video_url":null,"likes":19,"comments":5,"shares":2,"date":"2025-08-29T05:04:36.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0CbqnS3PRfpBy5jWtvvnccTaSDbAJe7fhXTBqLM2V9MPnhGMY2wt3WbNsX2xbv9EJl","engagement_rate":"0.19"},{"id":"1172302474927917","university":"Yeshiva University","text":"","image_url":"","original_image_url":"","video_url":null,"likes":23,"comments":3,"shares":2,"date":"2025-08-21T18:16:36.000Z","post_type":"Text","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid038EgziaUR1Fc4mm6tmz3nDZPG1y5CDcJWtxkEr811aWyC1kwDSxdrwRbhKzzi5AJfl","engagement_rate":"0.20"},{"id":"1172185868272911","university":"Yeshiva University","text":"From interning at Israel’s Foreign Ministry to serving in the IDF reserves, Aharon Cohen ’27YC spent his summer on the frontlines of history. 🇮🇱 \nHe split his weeks between working with ministers in the Knesset and defending Israel in uniform. Along the way, he even became research assistant to Ambassador Michael Oren on his upcoming book about Oct. 7. \n\nRead more at https://www.yu.edu/news/featured/yu-undergrad-aharon-cohen-turns-summer-israel-front-row-seat-history","image_url":"/api/files/facebook_data/yeshivauniversity/images/1172185868272911.jpg","original_image_url":"https://scontent-lga3-1.xx.fbcdn.net/v/t51.82787-15/537687244_18539601106032659_8795763631612012722_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=yTtk2qhXpJ8Q7kNvwEz3JKt&_nc_oc=AdksOegFJhU79roQCG7j3_xuFIKmSTHaMytJoTxR2oxdQ9p8GfGiF6eJQmFH_CEDKro&_nc_zt=23&_nc_ht=scontent-lga3-1.xx&_nc_gid=CuzmPv4t0dSi8aNqLYllMg&oh=00_AfeI3TLJYOmX-sKLtStPF-R_wgKBQnku_nFqeBw7maKKjw&oe=69008E3A","video_url":null,"likes":42,"comments":1,"shares":3,"date":"2025-08-21T15:26:40.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02N81NRWRn5KrtqozPt2ZYNSpWLMrxPjx52aKiEWVW7tD6HHmBQnPsJqGAyan5bTm2l","engagement_rate":"0.33"},{"id":"1165039338987564","university":"Yeshiva University","text":"Applications for Fall 2026 are now live!\nFind out what’s possible at a top-ranked university that opens doors to careers in emerging and evolving fields.\n\n🔗 See link in bio to apply today!\n➡️ Learn More at yu.edu/learnmore\n\n#Classof2030 #YU","image_url":"/api/files/facebook_data/yeshivauniversity/images/1165039338987564.jpg","original_image_url":"https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/531795197_1165039278987570_6005894010979053845_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_ohc=1_6j0-_ceewQ7kNvwFb49Su&_nc_oc=AdkK9x15QTCKfn_bhELhmom1dEZYaONxMbi66GQOpSsVQGtj50oaJSRZ4hil0vn7tKQ&_nc_zt=23&_nc_ht=scontent-lga3-1.xx&_nc_gid=CuzmPv4t0dSi8aNqLYllMg&oh=00_AffPordM0gcn8HoKd8GseBTRvwM_4l-4f-BqA_BBiDN75g&oe=6900BC94","video_url":null,"likes":18,"comments":2,"shares":1,"date":"2025-08-12T17:38:35.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02S9iXdDZUnPmdwS7nvD5EtHgGkhxHMZYMdwAmzTCuLJKHfqBbip28ivVhgnfuJRgkl","engagement_rate":"0.15"},{"id":"1160958026062362","university":"Yeshiva University","text":"It was a profound honor to meet with Israel’s President Isaac Herzog. We discussed how today’s challenges for global Jewry create opportunities for YU & the Jewish community to shine brighter. When Zionism is attacked, we raise our flag higher. We stand with Israel. 🇮🇱🕊️ #SupportIsrael #JewishUnity","image_url":"/api/files/facebook_data/yeshivauniversity/images/1160958026062362.jpg","original_image_url":"https://scontent-hou1-1.xx.fbcdn.net/v/t39.30808-6/528365681_1160958009395697_5747579910941225541_n.jpg?stp=dst-jpg_s720x720_tt6&_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=KBYD52CcfoMQ7kNvwFY8otf&_nc_oc=AdldFJOYy5jVpe8BSkhLfE-akb85TIBfO22FbRbD6OM4hKiLTXdd0XO_c6wKft35F10&_nc_zt=23&_nc_ht=scontent-hou1-1.xx&_nc_gid=76bqKpLyFfXWmHoWCoQoqQ&oh=00_AfcJpsZ7g-FAGk9vE6SkHwWkQq-3dvHH97ltgQ1xd67a5g&oe=6900A405","video_url":null,"likes":91,"comments":13,"shares":3,"date":"2025-08-07T15:50:35.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02wQjT2UPQidgcjxqzHGPmcSiEZvYi5LccnbasikpgJWi3C5kdAcij31sP5bchsmGVl","engagement_rate":"0.73"},{"id":"1159379316220233","university":"Yeshiva University","text":"Ruach. Unity. Community.\n\nGet ready to elevate your Elul with an unforgettable night of Jewish music - just in time for the Yamim Noraim.\n\nYeshiva University is proud to bring together students, alumni, and the broader Jewish community in a celebration of Jewish pride, spirit, and culture. At a time when unity matters more than ever, this concert carries the Ruach of YU beyond the campus - into the heart of Am Yisrael.\n\n🎟️ 10% off for YU students, staff & alumni\n➡️ See link in bio for more information - yu.edu/akiva\n\n@akiva.official\n@idanraichel\n@ordavidson\n@ely.katz\n@davidicro","image_url":"/api/files/facebook_data/yeshivauniversity/images/1159379316220233.jpg","original_image_url":"https://scontent-hou1-1.xx.fbcdn.net/v/t39.30808-6/527968822_1159379269553571_5562198771942936906_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=H4MKm1hRE7wQ7kNvwGmJc8v&_nc_oc=AdkgSW9GoFF0RJw-v8NL2e-MVXmj7WEUG2subTTZVm1cDNQKC6mNhmHaShqfa6sG-6A&_nc_zt=23&_nc_ht=scontent-hou1-1.xx&_nc_gid=76bqKpLyFfXWmHoWCoQoqQ&oh=00_AfepNPFFcmggSWTQD0enWk0gWpd4VHTPzTgwFG4pb_o3nw&oe=6900BCFD","video_url":null,"likes":34,"comments":8,"shares":2,"date":"2025-08-05T16:00:27.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0DAAhk2niU6z92TY8rAWvtncqH8wr3MX7H7UXYQ7PnEvcUCv5WXVAnqAw4h2gYReWl","engagement_rate":"0.31"},{"id":"1156109079880590","university":"Yeshiva University","text":"Join us on Sunday, August 3 for a LIVE Tisha B'Av webcast. Programs are live in person and webcast online, and will be available on-demand all day. In Partnership with World Mizrachi \n\nVisit https://bit.ly/3X44nwL","image_url":"/api/files/facebook_data/yeshivauniversity/images/1156109079880590.jpg","original_image_url":"https://scontent-hou1-1.xx.fbcdn.net/v/t39.30808-6/526481847_1156109053213926_7767678695558974233_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=100&ccb=1-7&_nc_sid=127cfc&_nc_ohc=xDUXXP61D3MQ7kNvwFc7-JN&_nc_oc=AdkvcMsqCxstB8Gg5bO1MNpU1jN-FO7YNzF08iZmsB891S4iMnwMJN80YmkxfuHlEto&_nc_zt=23&_nc_ht=scontent-hou1-1.xx&_nc_gid=76bqKpLyFfXWmHoWCoQoqQ&oh=00_Afd8d_kIWiOhkVwd91gRs4TaMW2gmCLEIii4a_hJLMjjhA&oe=6900AA11","video_url":null,"likes":16,"comments":6,"shares":3,"date":"2025-08-01T15:15:18.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02geR6TMWZNhKNVQYBCij1ejPeYoJdE2Kvg1prvdzw5taYnPVEZLvw9HguF11RZ1nEl","engagement_rate":"0.19"},{"id":"1155278746630290","university":"Yeshiva University","text":"Ambassador Huckabee is a great champion of Israel and America. President Berman was honored to meet with him today to discuss the ways in which Yeshiva University is creating new bridges throughout society based on our shared values – and to thank him for his bold fight against antisemitism, his unyielding moral clarity in the aftermath of October 7th, his consistent advocacy for the return of the hostages, and his friendship to our community.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1155278746630290.jpg","original_image_url":"https://scontent-lax3-2.xx.fbcdn.net/v/t39.30808-6/515500314_1155278699963628_7134774460599948994_n.jpg?stp=cp6_dst-jpegr_s720x720_tt6&_nc_cat=100&ccb=1-7&_nc_sid=127cfc&_nc_ohc=SAJdcS9-AKwQ7kNvwHnoztz&_nc_oc=AdlJC2yIljzAJu6YUNIma8ErjLhGA1UsJvGirviGjG-st--UBJzVheohpwxa8e0mKBQ&_nc_zt=23&se=-1&_nc_ht=scontent-lax3-2.xx&_nc_gid=_FxacVQ3KBFsNWNxGHczvw&oh=00_Afe7b0P_KZBPqWQ4i35mrqVUn0zHcuORRP01OQiJNOUsbQ&oe=6900A039","video_url":null,"likes":68,"comments":3,"shares":6,"date":"2025-07-31T14:56:26.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0P2Rqe1bm81EPg6ZmMmns9tNc2R3em4rXSpXnXGWuPqcyEqHR7hpNXBTrWnYvrgrwl","engagement_rate":"0.55"},{"id":"1139763864848445","university":"Yeshiva University","text":"Yeshiva University is launching a groundbreaking Master of Hebrew Literature in Bioethics & Jewish Law at RIETS—the only program of its kind—merging halacha and medical ethics to guide real-life healthcare decisions through a Torah lens. Fully online and CME-eligible, it equips rabbinic leaders, healthcare professionals, and educators to navigate today’s toughest medical dilemmas with clarity, compassion, and halachic integrity.\n\nRead more at https://bit.ly/4lpaiY6","image_url":"/api/files/facebook_data/yeshivauniversity/images/1139763864848445.jpg","original_image_url":"https://scontent-lax3-1.xx.fbcdn.net/v/t39.30808-6/518027532_1139763764848455_309863437679613689_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=LjkD1rQRu4cQ7kNvwHdQIZG&_nc_oc=Adlxjc_gKX1OAs_ZCugLW-kZ7JmGUVb77ztv1pEuA5Wo1Z07anunNi3nvhO7VM9y-7s&_nc_zt=23&_nc_ht=scontent-lax3-1.xx&_nc_gid=_FxacVQ3KBFsNWNxGHczvw&oh=00_AffqabIy7IrXs_2mtkEqNmqDKd01wVauTIdfAyozXuI2lQ&oe=6900B138","video_url":null,"likes":709,"comments":38,"shares":50,"date":"2025-07-11T14:00:23.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02RzKnhnerwr3zoZnDdHjNFBvG9nY6nf4j1uhWyXg9fGoE3b56VhPkSNmHFEE7es57l","engagement_rate":"5.65"},{"id":"1134428038715361","university":"Yeshiva University","text":"This July 4th, we’re grateful for the freedom we enjoy—and for a nation whose strength continues to protect the values we hold dear, both here and abroad.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1134428038715361.jpg","original_image_url":"https://scontent-lax3-1.xx.fbcdn.net/v/t51.82787-15/515780383_18530305723032659_592017794581154169_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_ohc=8Jh103K_yGcQ7kNvwFLb1LX&_nc_oc=AdnbQpo8h5uMiqffehRajymDSWtT9XulqeGR7hBix7Uc7M_VwQNpuzMCXXbLvrW0ub0&_nc_zt=23&_nc_ht=scontent-lax3-1.xx&_nc_gid=_FxacVQ3KBFsNWNxGHczvw&oh=00_Afe2xxEN63bWbWDISMolJXSqNkVGd6zjaNZ7hcVrUPaiHg&oe=6900B2E9","video_url":null,"likes":49,"comments":7,"shares":4,"date":"2025-07-04T13:25:18.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02gGFFkDJJuvdiw1JmwSjDp1K3mMtkrSJPQcarkuYfbFW9Fgx62ttbJKMX27KKv7CAl","engagement_rate":"0.43"},{"id":"1127642909393874","university":"Yeshiva University","text":"Love the song? \nSend a video of you singing the song to IAYU@yu.edu or post it on Instagram and tag @myyustory","image_url":"/api/files/facebook_data/yeshivauniversity/images/1127642909393874.jpg","original_image_url":"https://scontent-iad3-2.xx.fbcdn.net/v/t39.30808-6/511270058_1127642882727210_1299141348327282437_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_ohc=jsqNITQH-a0Q7kNvwHTHQC4&_nc_oc=AdmpqZNBw_Eur9PrB5f9E6qw34ay8wHJOWbiN-SlReuKo5b95FXVCSupwfC7UhN0Cfs&_nc_zt=23&_nc_ht=scontent-iad3-2.xx&_nc_gid=0LFXLDI7QQCfAbJlR1CCkA&oh=00_AfdQpdcZpjnE0Y0wyOD2GL_ZCOzxAYOSVlPJbKxteyrP0A&oe=6900B9EE","video_url":null,"likes":26,"comments":6,"shares":4,"date":"2025-06-25T20:21:53.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0QViqcJ3kBHnpKiVyX4FUmhzr8Tx4GxvAB2m5MWtbg8QEuBjHND871RrJpoU362d1l","engagement_rate":"0.27"},{"id":"1126890059469159","university":"Yeshiva University","text":"President Berman was asked by i24NEWS English  today to go back to his delivering the Prayer at the Inauguration, and whether he expected the changes in the world just a number of months later.\n\nHe responded that in his conversations with President Trump, the president's \"commitment to Israel, protecting Israel and doing what he could to ensure the safety and security of the people of Israel has always been abundantly clear – so his bold leadership in ensuring Iran does not obtain nuclear weapons comes as no surprise to me.\"","image_url":"/api/files/facebook_data/yeshivauniversity/images/1126890059469159.jpg","original_image_url":"https://scontent-iad3-1.xx.fbcdn.net/v/t15.5256-10/510639924_1472404623944941_1570469160507551971_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=107&ccb=1-7&_nc_sid=7965db&_nc_ohc=iRSair2M3c8Q7kNvwGQAIrH&_nc_oc=AdmFgxl7LjQ2vG1l2-jsW4CpuTlYLwhPfqi26vpfyiFbAxSh0k2UKmjsKG_Rjaf7omI&_nc_zt=23&_nc_ht=scontent-iad3-1.xx&_nc_gid=0LFXLDI7QQCfAbJlR1CCkA&oh=00_Afee1qB6iDxlx-meeBdFaRD_YsrSS66SVBv2gC6sUwM1yQ&oe=6900B4A6","video_url":null,"likes":49,"comments":6,"shares":5,"date":"2025-06-24T20:05:10.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/videos/697544816594245/","engagement_rate":"0.43"},{"id":"1124876526337179","university":"Yeshiva University","text":"🕊️ Join us for Tefillah, Inspiration & Reflections on the Iran War 🕊️\nThis Sunday, June 22 at 10:00 AM ET (5:00 PM Israel / 3:00 PM UK / 4:00 PM South Africa), unite with the global Jewish community for a powerful program featuring:\n📖 Tefillot from around the world\n🗣️ World-renowned rabbinic voices\n🛡️ Live military analysis and insights on the war with Iran\n💡 Practical guidance on how we can each contribute\n🔗 Join at: Mizrachi.org/IranWar\nLet’s come together in strength, unity, and prayer.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1124876526337179.jpg","original_image_url":"https://scontent-iad3-2.xx.fbcdn.net/v/t39.30808-6/510726124_1124876603003838_49057929510577705_n.jpg?stp=dst-jpg_s720x720_tt6&_nc_cat=100&ccb=1-7&_nc_sid=833d8c&_nc_ohc=f5jDdJiU8GoQ7kNvwGxlLTo&_nc_oc=AdmLM2j-L78Mh4FEIsTceIA7ZKfEqU6_sBKNnPTmDN0H6Jc0hSFazxVA4DCJT5dmkRI&_nc_zt=23&_nc_ht=scontent-iad3-2.xx&_nc_gid=0LFXLDI7QQCfAbJlR1CCkA&oh=00_Afc9tY41Djpzto7qCFxT6nRwHrAa0cw_mxUeK9KIr08KPw&oe=6900A029","video_url":null,"likes":23,"comments":2,"shares":1,"date":"2025-06-22T05:53:59.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0RynBFzn9jYF9q2M1P9Si2pzDxXdFGRAxhhRrM84bZp7Qm13FAf4mi8VZdJcF8K68l","engagement_rate":"0.18"},{"id":"1123671916457640","university":"Yeshiva University","text":"Legislators, entrepreneurs and industry experts gathered together at Wednesday night's Hack the Hate NYC event to share ideas and actionable steps towards combating antisemitism online.\n\nFeatured speakers include Shiran Mlamdovsky Somech, Founder & CEO of Generative AI for Good; Keynote Speaker Anne Neuberger, Former Deputy National Security Advisor of the United States; and panel moderators Dr. Tamar Avnet, Associate Dean and Professor of Marketing at Sy Syms; Alexandra Lebovits Benedon, Executive Board Member of the NY Israel Chamber of Commerce; and Guy Franklin, Founder & CEO, Israeli Mapped in NY. \n\nVideo messages were shared from Leo Terrell, Senior Counsel to the Assistant Attorney General for the Civil Rights Division and Chair of the DOJ Task Force to Combat Antisemitism, and Chen Shmilo, CEO of 8200 Alumni Association. \n\nYU's President, Rabbi Dr. Ari Berman, delivered opening remarks and Rabbi Moshe Hauer, Executive Vice President of the Orthodox Union concluded the evening. \n\nThe event was held at the YU Museum and was organized by Yeshiva University's Sy Syms School of Business, Generative AI for Good and 8200 Alumni Association. \n\nStay tuned for the full recap article on the YU News blog site at www.yu.edu/news","image_url":"","original_image_url":"","video_url":null,"likes":33,"comments":3,"shares":1,"date":"2025-06-20T13:54:46.000Z","post_type":"Text","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0DoQfH99s3MDvAU7CqywH7gWRHfYTXggNRPdC8rsBqZRrAaMhWpyzKJVxJBM8unzCl","engagement_rate":"0.25"},{"id":"1122374536587378","university":"Yeshiva University","text":"Once a YU student, always part of the family\nOur alumni don’t just leave with a degree, they leave with lifelong friendships, meaningful memories and a lasting connection to our community.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1122374536587378.jpg","original_image_url":"https://scontent.fmto1-1.fna.fbcdn.net/v/t15.5256-10/509660289_1223911736186368_6587569980365855887_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=109&ccb=1-7&_nc_sid=7965db&_nc_ohc=AExvG9S1UDEQ7kNvwEbjlpZ&_nc_oc=Adn_mEhld8Ci48-BGm43gFGKOQux6xNCC7aodk8sAc43YSEPY0MMWncZwyMJEVP1Jhw&_nc_zt=23&_nc_ht=scontent.fmto1-1.fna&_nc_gid=wlDWiPbjou8EmKzd8loqJQ&oh=00_Aff4A4epRowTazboe2u6O8UT1s6U4O6b30y-N38rDph9pw&oe=6900A0AF","video_url":null,"likes":24,"comments":3,"shares":0,"date":"2025-06-18T19:01:48.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/videos/693635723280210/","engagement_rate":"0.18"},{"id":"1121549736669858","university":"Yeshiva University","text":"Rabbi Dr. Ari Berman, president of Yeshiva University, joined Hudson Institute Senior Fellow Liel Leibovitz to discuss how faith-based education can show a better way forward for US higher learning institutions.\n\nWatch the discussion now at https://bit.ly/3HEaX99","image_url":"/api/files/facebook_data/yeshivauniversity/images/1121549736669858.jpg","original_image_url":"https://scontent.fmto1-1.fna.fbcdn.net/v/t15.5256-10/508932118_733948715754084_7986953704893755507_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=107&ccb=1-7&_nc_sid=7965db&_nc_ohc=7mAbvR4yz8sQ7kNvwGaZN9o&_nc_oc=Adl8FQdF7RPNlzNqrIpb7W91ytjRFukdEOYvvxEdJ-1wn9t6aKDbmGIDrayAGmJzDNA&_nc_zt=23&_nc_ht=scontent.fmto1-1.fna&_nc_gid=wlDWiPbjou8EmKzd8loqJQ&oh=00_Afc6y9ArISOxSF-7U3OCquTOyzN_ACtuvN1evmlCO-Thfw&oe=6900A032","video_url":null,"likes":61,"comments":3,"shares":1,"date":"2025-06-17T16:14:30.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/videos/1292086782334125/","engagement_rate":"0.44"},{"id":"1118082670349898","university":"Yeshiva University","text":"","image_url":"/api/files/facebook_data/yeshivauniversity/images/1118082670349898.jpg","original_image_url":"https://scontent-lga3-1.xx.fbcdn.net/v/t51.75761-15/505717329_18526078606032659_7329343837644658147_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=102&ccb=1-7&_nc_sid=127cfc&_nc_ohc=MwCPbvNkhIwQ7kNvwH4rDfS&_nc_oc=AdkFJWrCF7DhoJaqYX_WAO2TlZ04k09p1B9GC-lSdIlydQ1Pki47IsMqePm9COD4e5Q&_nc_zt=23&_nc_ht=scontent-lga3-1.xx&_nc_gid=OiU1fsIAGFI7uq6isP_nTA&oh=00_AfeuIKEZ4YNBQQoqUNYG6iY3lP1gktnZisezufjfjIN9FA&oe=69009A80","video_url":null,"likes":162,"comments":6,"shares":17,"date":"2025-06-13T02:51:23.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid0HeCQCap6v46TWQeCDKe9Uu8WcXJKtreqScPaza85SdwPeHvSLhj9zG63Kyv2UzAql","engagement_rate":"1.35"},{"id":"1117107083780790","university":"Yeshiva University","text":"Congratulations to the 2025 graduates of the Cardozo School of Law\n🎓 #Classof25 #yugrad25","image_url":"","original_image_url":"","video_url":null,"likes":97,"comments":6,"shares":0,"date":"2025-06-11T18:57:51.000Z","post_type":"Text","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid07a9AxiVPzcwSKYHghsXF6ZeEaar97A3tCp61ggz25jQXSRFnHJFBQakfhUoT991ml","engagement_rate":"0.69"},{"id":"1115826947242137","university":"Yeshiva University","text":"\"Antisemitism is a symptom to a greater sickness.\" - Rabbi Dr. Ari Berman\nRabbi Dr. Ari Berman, president of Yeshiva University, joined Hudson Senior Fellow Liel Leibovitz to discuss how faith-based education can show a better way forward for US higher learning institutions. \n\nWatch the discussion now.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1115826947242137.jpg","original_image_url":"https://external-lga3-2.xx.fbcdn.net/emg1/v/t13/5101307948672290431?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FFpAXialn7Wc%2Fmaxresdefault.jpg%3Fv%3D6841decd&fb_obo=1&utld=ytimg.com&stp=c0.5000x0.5000f_dst-jpg_flffffff_p500x261_q75_tt6&_nc_gid=OiU1fsIAGFI7uq6isP_nTA&_nc_oc=Adldl0jaegIZzl9fSvKeA2sTeSsoEgT5yJmHNYrFdNQCufIgs5w_79dKk9vpfzQU5bE&ccb=13-1&oh=06_Q3-4AY8ORFjWmQpkFIK5mxzIdzZjXAhnipO3SKnFdBV6sU7d&oe=68FCBAE2&_nc_sid=139b9a","video_url":null,"likes":15,"comments":6,"shares":1,"date":"2025-06-10T02:07:54.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid02Ejgh4eMh1UKpijYn1cciXDyeZkxX7w52AmSNgNJBNeD3kApDbQCUrPRSMeni3Zurl","engagement_rate":"0.15"},{"id":"1113372160820949","university":"Yeshiva University","text":"🇮🇱🇺🇸 At Yeshiva University, international students come to see that love for Israel and love for America are deeply connected.\nThrough their studies, community, and values-driven education, they recognize that Israel’s commitment to freedom, democracy, and human dignity echoes the very ideals that define America. Rooted in Torah, inspired by liberty — their journey strengthens a lasting bond between two nations. \n\nRabbi Berman sat down with Mornings with Maria and Fox Business to speak about welcoming international students.\n\nTo learn more about how YU fosters a welcoming international community visit yu.edu.","image_url":"/api/files/facebook_data/yeshivauniversity/images/1113372160820949.jpg","original_image_url":"https://scontent-atl3-2.xx.fbcdn.net/v/t15.5256-10/504855904_1055456356076415_9181501549754704793_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=104&ccb=1-7&_nc_sid=7965db&_nc_ohc=3TrUeqMGRAsQ7kNvwFc7ezx&_nc_oc=AdlF7o3n_CFANMEB1qSh50pESqntm4J89sdlLAKqEU11nkXHkGJM7hpHI-kWCX8rl5k&_nc_zt=23&_nc_ht=scontent-atl3-2.xx&_nc_gid=cIFzeQVMLYyOb3bvmyANcA&oh=00_Afc764WR4igVOhVSY4DcTKFfQhu6OhCou62NindOC-Hm7g&oe=6900BC18","video_url":null,"likes":105,"comments":10,"shares":2,"date":"2025-06-06T20:48:17.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/videos/1032051789054143/","engagement_rate":"0.79"},{"id":"1113273640830801","university":"Yeshiva University","text":"This year's 94th commencement honored the graduates of the Class of 2025, Rachel Goldberg-Polin, and Congresswoman Elise Stefanik in a powerful day of unity, pride, and purpose.\n\nRead more at https://bit.ly/4kxLxbQ","image_url":"/api/files/facebook_data/yeshivauniversity/images/1113273640830801.jpg","original_image_url":"https://scontent-atl3-2.xx.fbcdn.net/v/t39.30808-6/504382602_1113273620830803_3682041970566961512_n.jpg?stp=dst-jpg_s640x640_tt6&_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=TJ21RlEhN8gQ7kNvwG-HPjY&_nc_oc=AdmiuXLo8OXQDE7m7nUsdyglTxPvuxF3e6hBzRBtFdzWrZCuzkvPM84jJrafzds7iTE&_nc_zt=23&_nc_ht=scontent-atl3-2.xx&_nc_gid=cIFzeQVMLYyOb3bvmyANcA&oh=00_AfeEgMIV0IEJpIHhmCyiCRmUdrlyCLQgsa9DT2PPFdsvRQ&oe=69009316","video_url":null,"likes":63,"comments":6,"shares":2,"date":"2025-06-06T17:35:25.000Z","post_type":"Image","url":"https://www.facebook.com/YeshivaUniversity/posts/pfbid089ERx8B7Hp6yzTp4YH7QS5raEoBb5fGf8XDTTcxYiPk84kNapZvdxqhmDxgPrGjRl","engagement_rate":"0.49"}];
+
+        let allPosts = [];
+        let currentFilter = 'all';
+        let currentUniversity = 'yeshiva';
+
+        async function loadAllPosts() {
+            const loadingState = document.getElementById('loading-state');
+            const postsContainer = document.getElementById('posts-container');
+            const emptyState = document.getElementById('empty-state');
+
+            loadingState.style.display = 'block';
+            postsContainer.style.display = 'none';
+            emptyState.style.display = 'none';
+
+            try {
+                const uni = UNIVERSITIES[currentUniversity];
+                console.log(`🏫 Loading posts for: ${uni.name}`);
+
+                // For Yeshiva University, use REAL Facebook data
+                if (currentUniversity === 'yeshiva') {
+                    console.log('📘 Loading REAL Facebook posts from backend:', YESHIVA_FACEBOOK_POSTS.length);
+                    console.log('📊 Data source: yu-research-backend/public/facebook_data/yeshivauniversity_posts.json');
+                    const metrics = YESHIVA_FACEBOOK_POSTS.reduce((acc, p) => ({
+                        likes: acc.likes + p.likes,
+                        comments: acc.comments + p.comments,
+                        shares: acc.shares + p.shares
+                    }), {likes: 0, comments: 0, shares: 0});
+                    console.log('📈 Total engagement:', metrics.likes + metrics.comments + metrics.shares);
+                    console.log('📅 Date range:', YESHIVA_FACEBOOK_POSTS[0].date.substring(0,10), 'to', YESHIVA_FACEBOOK_POSTS[YESHIVA_FACEBOOK_POSTS.length-1].date.substring(0,10));
+                    allPosts = normalizeFacebookPosts(YESHIVA_FACEBOOK_POSTS);
+                } else {
+                    // For other universities, try to fetch from API
+                    const [instagram, facebook, twitter] = await Promise.all([
+                        fetch(`${API_BASE}/api/instagram/${uni.instagram}`).then(r => r.json()).catch(() => []),
+                        fetch(`${API_BASE}/api/facebook/${uni.facebook}`).then(r => r.json()).catch(() => []),
+                        fetch(`${API_BASE}/api/twitter/${uni.twitter}`).then(r => r.json()).catch(() => [])
+                    ]);
+
+                    console.log('📸 Instagram:', instagram?.length || 0, 'posts');
+                    console.log('📘 Facebook:', facebook?.length || 0, 'posts');
+                    console.log('🐦 Twitter:', twitter?.length || 0, 'posts');
+
+                    allPosts = [
+                        ...normalizeInstagramPosts(instagram),
+                        ...normalizeFacebookPosts(facebook),
+                        ...normalizeTwitterPosts(twitter)
+                    ];
+                }
+
+                loadingState.style.display = 'none';
+
+                if (allPosts.length === 0) {
+                    emptyState.style.display = 'block';
+                } else {
+                    postsContainer.style.display = 'grid';
+                    renderPosts(allPosts);
+                }
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                loadingState.style.display = 'none';
+                emptyState.style.display = 'block';
+            }
+        }
+
+        function getImageUrl(post) {
+            let imageUrl = post.local_image_path || post.image_url || post.thumbnail_url || '';
+            if (!imageUrl) return '';
+            if (imageUrl.startsWith('http')) return imageUrl;
+            if (imageUrl.startsWith('/')) return `${API_BASE}${imageUrl}`;
+            return `${API_BASE}/scraped_data/${imageUrl}`;
+        }
+
+        function normalizeInstagramPosts(data) {
+            if (!data || !Array.isArray(data)) return [];
+            return data.map(post => ({
+                platform: 'instagram',
+                id: post.post_url || Math.random(),
+                author: 'Instagram',
+                avatar: 'IG',
+                date: post.timestamp || post.date || new Date().toISOString(),
+                text: post.caption || post.text || '',
+                image: getImageUrl(post),
+                likes: post.likes_count || post.likes || 0,
+                comments: post.comments_count || post.comments || 0,
+                url: post.post_url || '#'
+            }));
+        }
+
+        function normalizeFacebookPosts(data) {
+            if (!data || !Array.isArray(data)) return [];
+            return data.map(post => ({
+                platform: 'facebook',
+                id: post.id || Math.random(),
+                author: 'Facebook',
+                avatar: 'FB',
+                date: post.date || post.created_time || post.timestamp || new Date().toISOString(),
+                text: post.text || post.message || '',
+                image: getImageUrl(post),
+                likes: post.likes || post.likes_count || post.reactions || 0,
+                comments: post.comments || post.comments_count || 0,
+                shares: post.shares || post.shares_count || 0,
+                engagement_rate: post.engagement_rate || 0,
+                url: post.url || post.permalink_url || '#'
+            }));
+        }
+
+        function normalizeTwitterPosts(data) {
+            if (!data || !Array.isArray(data)) return [];
+            return data.map(post => ({
+                platform: 'twitter',
+                id: post.id || Math.random(),
+                author: 'Twitter',
+                avatar: 'TW',
+                date: post.created_at || post.timestamp || new Date().toISOString(),
+                text: post.text || post.full_text || '',
+                image: getImageUrl(post),
+                likes: post.favorite_count || post.likes || 0,
+                retweets: post.retweet_count || 0,
+                url: post.url || '#'
+            }));
+        }
+
+        function updateAnalytics(posts) {
+            const analyticsEl = document.getElementById('analytics-summary');
+
+            if (posts.length === 0) {
+                analyticsEl.style.display = 'none';
+                return;
+            }
+
+            analyticsEl.style.display = 'block';
+
+            // Calculate metrics
+            const totalPosts = posts.length;
+            const totalLikes = posts.reduce((sum, p) => sum + (p.likes || 0), 0);
+            const totalComments = posts.reduce((sum, p) => sum + (p.comments || 0), 0);
+            const totalShares = posts.reduce((sum, p) => sum + (p.shares || 0), 0);
+            const avgEngagement = posts.reduce((sum, p) => sum + parseFloat(p.engagement_rate || 0), 0) / totalPosts;
+
+            // Update DOM
+            document.getElementById('total-posts').textContent = totalPosts;
+            document.getElementById('total-likes').textContent = formatNumber(totalLikes);
+            document.getElementById('total-comments').textContent = formatNumber(totalComments);
+            document.getElementById('total-shares').textContent = formatNumber(totalShares);
+            document.getElementById('avg-engagement').textContent = avgEngagement.toFixed(2) + '%';
+        }
+
+        function renderPosts(posts) {
+            const container = document.getElementById('posts-container');
+            const emptyState = document.getElementById('empty-state');
+
+            if (posts.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                document.getElementById('analytics-summary').style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            // Update analytics
+            updateAnalytics(posts);
+
+            // Sort posts by date (newest first)
+            const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            container.innerHTML = sortedPosts.map(post => {
+                const date = new Date(post.date);
+                const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+                return `
+                    <div class="post-card" onclick="window.open('${post.url}', '_blank')">
+                        <div class="post-header">
+                            <div class="post-avatar">${post.avatar}</div>
+                            <div class="post-author-info">
+                                <div class="post-author-name">${UNIVERSITIES[currentUniversity].name}</div>
+                                <div class="post-date">
+                                    ${formattedDate} • <span class="platform-badge badge-${post.platform}">${post.platform}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${post.image ? `<img src="${post.image}" class="post-image" onerror="this.style.display='none'" loading="lazy">` : ''}
+                        ${post.text ? `
+                            <div class="post-content">
+                                <div class="post-text">${post.text}</div>
+                            </div>
+                        ` : ''}
+                        <div class="post-stats">
+                            ${post.likes ? `
+                                <div class="post-stat">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                    </svg>
+                                    ${formatNumber(post.likes)}
+                                </div>
+                            ` : ''}
+                            ${post.comments ? `
+                                <div class="post-stat">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                    </svg>
+                                    ${formatNumber(post.comments)}
+                                </div>
+                            ` : ''}
+                            ${post.shares ? `
+                                <div class="post-stat">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="18" cy="5" r="3"/>
+                                        <circle cx="6" cy="12" r="3"/>
+                                        <circle cx="18" cy="19" r="3"/>
+                                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                                    </svg>
+                                    ${formatNumber(post.shares)}
+                                </div>
+                            ` : ''}
+                            ${post.retweets ? `
+                                <div class="post-stat">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="17 1 21 5 17 9"/>
+                                        <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                                        <polyline points="7 23 3 19 7 15"/>
+                                        <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                                    </svg>
+                                    ${formatNumber(post.retweets)}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectUniversity(uniKey) {
+            currentUniversity = uniKey;
+
+            document.querySelectorAll('.ios-list-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+
+            const selectedItem = document.querySelector(`.ios-list-item[data-uni="${uniKey}"]`);
+            if (selectedItem) {
+                selectedItem.classList.add('selected');
+            }
+
+            loadAllPosts();
+        }
+
+        function filterPlatform(platform, event) {
+            currentFilter = platform;
+
+            document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
+            if (event) event.target.classList.add('active');
+
+            const filtered = platform === 'all'
+                ? allPosts
+                : allPosts.filter(p => p.platform === platform);
+
+            renderPosts(filtered);
+        }
+
+        function searchPosts() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = allPosts.filter(post => {
+                const matchesSearch = !query || (post.text && post.text.toLowerCase().includes(query));
+                const matchesPlatform = currentFilter === 'all' || post.platform === currentFilter;
+                return matchesSearch && matchesPlatform;
+            });
+            renderPosts(filtered);
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('ios-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+
+        // Update sidebar badge when posts load
+        function updateSidebarBadge() {
+            const badge = document.getElementById('sidebar-badge');
+            if (badge && allPosts.length > 0) {
+                badge.textContent = allPosts.length;
+            }
+
+            const mobileBadge = document.getElementById('mobile-social-badge');
+            if (mobileBadge && allPosts.length > 0) {
+                mobileBadge.textContent = allPosts.length;
+            }
+        }
+
+        // Call after posts load
+        const originalRenderPosts = renderPosts;
+        renderPosts = function(posts) {
+            originalRenderPosts(posts);
+            if (currentFilter === 'all') {
+                updateSidebarBadge();
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', loadAllPosts);
+    </script>
+
+    <!-- Bottom Navigation - Mobile Only -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-content">
+            <a href="elegant-bento.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="social-posts.html" class="bottom-nav-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="5"/>
+                    <circle cx="12" cy="12" r="4"/>
+                    <circle cx="18" cy="6" r="1" fill="currentColor"/>
+                </svg>
+                <span>Social</span>
+                <div class="bottom-nav-badge" id="mobile-social-badge">0</div>
+            </a>
+
+            <a href="digital-ads.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+                    <line x1="7" y1="2" x2="7" y2="22"/>
+                    <line x1="17" y1="2" x2="17" y2="22"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                </svg>
+                <span>Ads</span>
+            </a>
+
+            <a href="email-marketing.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span>Email</span>
+            </a>
+
+            <a href="research-files.html" class="bottom-nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                    <polyline points="13 2 13 9 20 9"/>
+                </svg>
+                <span>Files</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Theme System -->
+    <script src="theme.js"></script>
+
+</body>
+</html>

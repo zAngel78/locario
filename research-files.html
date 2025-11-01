@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Authentication Guard - Must be first! -->
+    <script src="auth.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Files  YU Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Global Styles & Theme System -->
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* Override container padding for full screen */
+        .ios-container {
+            padding: 0 !important;
+            max-width: 100% !important;
+            height: calc(100vh - 88px);
+            overflow: hidden;
+        }
+
+        /* Files Page Layout */
+        .files-wrapper {
+            display: flex;
+            gap: 0;
+            height: 100%;
+        }
+
+        .files-sidebar-panel {
+            width: 220px;
+            background: var(--bg-secondary);
+            border-right: 0.5px solid var(--separator);
+            padding: 12px 0;
+            flex-shrink: 0;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .files-category {
+            margin-bottom: 16px;
+        }
+
+        .category-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            padding: 0 12px 6px;
+            letter-spacing: 0.06em;
+        }
+
+        .folder-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background 0.15s;
+            font-size: 13px;
+            letter-spacing: -0.08px;
+        }
+
+        .folder-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .folder-item.active {
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--ios-blue);
+            font-weight: 500;
+        }
+
+        .folder-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            color: var(--ios-blue);
+        }
+
+        .folder-count {
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .files-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .files-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border-bottom: 0.5px solid var(--separator);
+            gap: 12px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 28px;
+            padding: 0 10px 0 28px;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: var(--bg-primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            padding: 2px;
+        }
+
+        .view-btn {
+            width: 26px;
+            height: 26px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .view-btn.active {
+            background: var(--bg-secondary);
+            color: var(--ios-blue);
+        }
+
+        .files-content {
+            flex: 1;
+            background: var(--bg-primary);
+            overflow-y: auto;
+            padding: 16px;
+            height: 100%;
+        }
+
+        /* List View */
+        .files-list {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .file-row {
+            display: grid;
+            grid-template-columns: 36px 1fr 90px 70px;
+            gap: 12px;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 0.5px solid var(--separator);
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .file-row:last-child {
+            border-bottom: none;
+        }
+
+        .file-row:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .file-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ios-red);
+        }
+
+        .file-info {
+            min-width: 0;
+        }
+
+        .file-name {
+            font-size: 13px;
+            letter-spacing: -0.08px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-bottom: 2px;
+        }
+
+        .file-kind {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .file-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        /* Grid View */
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .file-card {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: background 0.1s;
+            text-align: center;
+        }
+
+        .file-card:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .file-card-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ios-red);
+        }
+
+        .file-card-name {
+            font-size: 12px;
+            letter-spacing: -0.08px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-bottom: 4px;
+        }
+
+        .file-card-size {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            color: var(--text-tertiary);
+        }
+
+        .empty-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .empty-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* PDF Modal */
+        .pdf-modal {
+            position: fixed;
+            inset: 0;
+            background: var(--overlay);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .pdf-modal.show {
+            display: flex;
+        }
+
+        .pdf-modal-content {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .pdf-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 0.5px solid var(--separator);
+        }
+
+        .pdf-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .pdf-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pdf-close:hover {
+            background: var(--ios-red);
+            color: white;
+        }
+
+        .pdf-body {
+            flex: 1;
+            overflow: auto;
+            padding: 16px;
+            background: var(--bg-primary);
+        }
+
+        .pdf-viewer {
+            width: 100%;
+            min-height: 500px;
+            border: none;
+        }
+
+        .pdf-viewer[src*=".png"],
+        .pdf-viewer[src*=".jpg"],
+        .pdf-viewer[src*=".jpeg"],
+        .pdf-viewer[src*=".svg"] {
+            min-height: auto;
+            max-height: 80vh;
+        }
+
+        @media (max-width: 768px) {
+            /* Container adjustments */
+            .ios-container {
+                height: calc(100vh - 68px) !important;
+                padding: 0 !important;
+                padding-bottom: 68px !important;
+            }
+
+            /* Files wrapper - stack vertically */
+            .files-wrapper {
+                flex-direction: column;
+                height: 100%;
+            }
+
+            /* Sidebar panel as horizontal tabs */
+            .files-sidebar-panel {
+                width: 100%;
+                border-right: none;
+                border-bottom: 0.5px solid var(--separator);
+                max-height: 50vh;
+                overflow-y: auto;
+            }
+
+            /* Make folder items more touch-friendly */
+            .folder-item {
+                padding: 12px 16px;
+                font-size: 15px;
+                min-height: 44px;
+            }
+
+            .folder-icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            /* File rows - simplified for mobile */
+            .file-row {
+                grid-template-columns: 36px 1fr 60px;
+                padding: 12px 16px;
+                min-height: 56px;
+            }
+
+            .file-date {
+                display: none;
+            }
+
+            /* File name - allow wrapping */
+            .file-name {
+                font-size: 15px;
+                line-height: 1.3;
+                white-space: normal;
+            }
+
+            /* File size - larger */
+            .file-size {
+                font-size: 13px;
+            }
+
+            /* Search box */
+            .search-box {
+                max-width: none;
+                margin: 12px 16px;
+            }
+
+            /* Files header */
+            .files-header {
+                padding: 12px 16px;
+            }
+
+            /* Files content */
+            .files-content {
+                padding: 0;
+            }
+
+            /* Category labels */
+            .category-label {
+                padding: 12px 16px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside class="ios-sidebar" id="ios-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+                        <path d="M16 8L10 12L16 16L22 12L16 8Z" stroke="white" stroke-width="1.5"/>
+                        <path d="M10 20L16 24L22 20" stroke="white" stroke-width="1.5"/>
+                        <path d="M10 16L16 20L22 16" stroke="white" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Yeshiva University</h1>
+                    <p>Research Intelligence</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-label">Overview</div>
+                <a href="elegant-bento.html" class="sidebar-nav-item">Dashboard</a>
+                <a href="analytics.html" class="sidebar-nav-item">Analytics</a>
+            </div>
+
+            <div class="nav-section">
+                
+            <div class="nav-section">
+                <div class="nav-section-label">Communications</div>
+                <a href="internal-comms.html" class="sidebar-nav-item">Internal Comms</a>
+                <a href="audience-segmentation.html" class="sidebar-nav-item">Audience</a>
+                <a href="channels-management.html" class="sidebar-nav-item">Channels</a>
+                <a href="moderation.html" class="sidebar-nav-item">Moderation</a>
+                <a href="compliance-visual.html" class="sidebar-nav-item">Compliance</a>
+                <a href="feedback.html" class="sidebar-nav-item">Feedback</a>
+                <a href="insights.html" class="sidebar-nav-item">Insights</a>
+            </div>
+
+            <div class="nav-section-label">Channels</div>
+                <a href="social-posts.html" class="sidebar-nav-item">
+                    <span>Social Media</span>
+                    <div class="nav-item-badge">0</div>
+                </a>
+                <a href="email-marketing.html" class="sidebar-nav-item">
+                    <span>Email Marketing</span>
+                    <div class="nav-item-badge">8</div>
+                </a>
+                <a href="digital-ads.html" class="sidebar-nav-item">
+                    <span>Digital Ads</span>
+                    <div class="nav-item-badge">19</div>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-label">Research</div>
+                <a href="universities.html" class="sidebar-nav-item">Universities</a>
+                <a href="research-files.html" class="sidebar-nav-item active">Files</a>
+                <a href="reports.html" class="sidebar-nav-item">Reports</a>
+                <a href="settings.html" class="sidebar-nav-item">Settings</a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-status">
+                <div class="status-dot"></div>
+                <div class="status-text">Connected</div>
+            </div>
+            <button class="btn-export">Export Data</button>
+        </div>
+    </aside>
+
+    <nav class="ios-nav">
+        <div class="ios-nav-content">
+            <div class="ios-nav-top">
+                <button class="nav-icon-btn" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div class="theme-toggle" id="themeToggle" onclick="ThemeManager.toggleTheme()">
+                        <div class="theme-toggle-slider">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="5"/>
+                                <line x1="12" y1="1" x2="12" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="23"/>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                <line x1="1" y1="12" x2="3" y2="12"/>
+                                <line x1="21" y1="12" x2="23" y2="12"/>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ios-large-title">Files</div>
+        </div>
+    </nav>
+
+    <div class="ios-container">
+        <div class="files-wrapper">
+            <div class="files-sidebar-panel">
+                <div class="files-category">
+                    <div class="category-label">Locations</div>
+                    <div class="folder-item active" onclick="selectFolder('all')">
+                        <svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <span>All Files</span>
+                        <span class="folder-count" id="all-count">0</span>
+                    </div>
+                    <div class="folder-item" onclick="selectFolder('recent')">
+                        <svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        <span>Recent</span>
+                    </div>
+                </div>
+
+                <div class="files-category">
+                    <div class="category-label">Categories</div>
+                    <div class="folder-item" onclick="selectFolder('analytics')">
+                        <svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"/>
+                            <line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                        <span>Analytics</span>
+                        <span class="folder-count" id="analytics-count">0</span>
+                    </div>
+                    <div class="folder-item" onclick="selectFolder('social')">
+                        <svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="5"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        <span>Social Media</span>
+                        <span class="folder-count" id="social-count">0</span>
+                    </div>
+                    <div class="folder-item" onclick="selectFolder('email')">
+                        <svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        <span>Email</span>
+                        <span class="folder-count" id="email-count">0</span>
+                    </div>
+                    <div class="folder-item" onclick="selectFolder('ads')">
+                        <svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="2" y1="12" x2="22" y2="12"/>
+                        </svg>
+                        <span>Digital Ads</span>
+                        <span class="folder-count" id="ads-count">0</span>
+                    </div>
+                    <div class="folder-item" onclick="selectFolder('universities')">
+                        <svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        </svg>
+                        <span>Universities</span>
+                        <span class="folder-count" id="universities-count">0</span>
+                    </div>
+                    <div class="folder-item" onclick="selectFolder('brochures')">
+                        <svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                        <span>University Brochures</span>
+                        <span class="folder-count" id="brochures-count">9</span>
+                    </div>
+                    <div class="folder-item" onclick="selectFolder('reports')">
+                        <svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <span>Reports</span>
+                        <span class="folder-count" id="reports-count">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="files-main">
+                <div class="files-toolbar">
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <input type="text" class="search-input" placeholder="Search" id="search-input" oninput="searchFiles()">
+                    </div>
+                    <div class="toolbar-actions">
+                        <div class="view-toggle">
+                            <button class="view-btn" id="grid-btn" onclick="setView('grid')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"/>
+                                    <rect x="14" y="3" width="7" height="7"/>
+                                    <rect x="14" y="14" width="7" height="7"/>
+                                    <rect x="3" y="14" width="7" height="7"/>
+                                </svg>
+                            </button>
+                            <button class="view-btn active" id="list-btn" onclick="setView('list')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="8" y1="6" x2="21" y2="6"/>
+                                    <line x1="8" y1="12" x2="21" y2="12"/>
+                                    <line x1="8" y1="18" x2="21" y2="18"/>
+                                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="files-content">
+                    <div id="files-container" class="files-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pdf-modal" id="pdf-modal" onclick="closePdfModal(event)">
+        <div class="pdf-modal-content" onclick="event.stopPropagation()">
+            <div class="pdf-header">
+                <div class="pdf-title" id="pdf-title">Document</div>
+                <button class="pdf-close" onclick="closePdfModal()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="pdf-body">
+                <iframe id="pdf-viewer" class="pdf-viewer" src=""></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Backend API configuration
+        const API_BASE = 'https://nomassi-1.onrender.com';
+        let allFiles = [];
+        let currentView = 'list';
+        let currentFolder = 'all';
+        const fileStructure = { all: [], analytics: [], social: [], email: [], ads: [], universities: [], brochures: [], reports: [] };
+
+        async function loadFiles() {
+            try {
+                console.log('Fetching files from:', `${API_BASE}/api/files`);
+                const response = await fetch(`${API_BASE}/api/files`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                allFiles = await response.json();
+                console.log('Loaded files:', allFiles.length);
+            } catch (error) {
+                console.error('Error loading files:', error);
+                allFiles = [];
+            }
+
+            categorizeFiles();
+            renderFiles();
+            updateCounts();
+        }
+
+        function categorizeFiles() {
+            Object.keys(fileStructure).forEach(key => fileStructure[key] = []);
+            allFiles.forEach(file => {
+                fileStructure.all.push(file);
+                if (file.category) fileStructure[file.category].push(file);
+            });
+
+            // Add university brochures manually
+            const brochures = [
+                { name: 'YU Wilf Admissions 2016-18.pdf', type: 'PDF Document', size: 90049, date: '2025-10-31', path: 'university_brochures/yeshiva/wilf-admissions-2016-18.pdf', category: 'brochures' },
+                { name: 'YU Beren Catalog 2020-22.pdf', type: 'PDF Document', size: 166912, date: '2025-10-31', path: 'university_brochures/yeshiva/beren-catalog-2020-22.pdf', category: 'brochures' },
+                { name: 'YU Catalog 2019-20.pdf', type: 'PDF Document', size: 428032, date: '2025-10-31', path: 'university_brochures/yeshiva/catalog-2019-20.pdf', category: 'brochures' },
+                { name: 'Brandeis Viewbook.pdf', type: 'PDF Document', size: 11968512, date: '2025-10-31', path: 'university_brochures/brandeis/viewbook.pdf', category: 'brochures' },
+                { name: 'NYU Stern MBA Viewbook.pdf', type: 'PDF Document', size: 4929536, date: '2025-10-31', path: 'university_brochures/nyu/stern-mba-viewbook.pdf', category: 'brochures' },
+                { name: 'NYU Travel Piece.pdf', type: 'PDF Document', size: 199, date: '2025-10-31', externalUrl: 'https://www.nyu.edu/content/dam/nyu/ugAdmissions/documents/Visit-nyu/20JS075_Digital_TravelPiece%20(1).pdf', category: 'brochures' },
+                { name: 'Touro COM Catalog 2023-25.pdf', type: 'PDF Document', size: 4473856, date: '2025-10-31', path: 'university_brochures/touro/tourocom-catalog-2023-25.pdf', category: 'brochures' },
+                { name: 'Touro GST MSIS Viewbook.pdf', type: 'PDF Document', size: 85735, date: '2025-10-31', externalUrl: 'https://gst.touro.edu/msis/docs/viewbook.pdf', category: 'brochures' },
+                { name: 'Columbia Class Profile 2025.pdf', type: 'PDF Document', size: 919, date: '2025-10-31', externalUrl: 'https://undergrad.admissions.columbia.edu/sites/default/files/2021-11/class_of_2025_profile_8.19_final.pdf', category: 'brochures' }
+            ];
+
+            brochures.forEach(brochure => {
+                fileStructure.all.push(brochure);
+                fileStructure.brochures.push(brochure);
+                allFiles.push(brochure);
+            });
+        }
+
+        function selectFolder(folder) {
+            currentFolder = folder;
+            document.querySelectorAll('.folder-item').forEach(f => f.classList.remove('active'));
+            event.target.closest('.folder-item')?.classList.add('active');
+            renderFiles();
+        }
+
+        function renderFiles() {
+            const container = document.getElementById('files-container');
+            let files = currentFolder === 'recent' ? [...allFiles].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10) : fileStructure[currentFolder] || [];
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            if (searchTerm) files = files.filter(f => f.name.toLowerCase().includes(searchTerm));
+
+            if (files.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <div class="empty-title">No Files</div>
+                        <div class="empty-subtitle">This folder is empty</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.className = currentView === 'grid' ? 'files-grid' : 'files-list';
+            container.innerHTML = files.map(file => currentView === 'grid' ? renderGrid(file) : renderList(file)).join('');
+        }
+
+        function renderList(file) {
+            const filePath = file.path || file.name;
+            const isImage = file.type === 'Image';
+            const iconColor = isImage ? '#34C759' : '#FF3B30';
+            const hasExternalUrl = file.externalUrl;
+            const clickHandler = hasExternalUrl
+                ? `onclick="window.open('${file.externalUrl}', '_blank')"`
+                : `onclick="previewFile('${file.name.replace(/'/g, "\\'")}', '${filePath.replace(/'/g, "\\'")}', ${isImage})"`;
+
+            return `
+                <div class="file-row" ${clickHandler}>
+                    <div class="file-icon">
+                        ${isImage ? `
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                        ` : `
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                        `}
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-kind">${file.type}</div>
+                    </div>
+                    <div class="file-date">${formatDate(file.date)}</div>
+                    <div class="file-size">${formatSize(file.size)}</div>
+                </div>
+            `;
+        }
+
+        function renderGrid(file) {
+            const filePath = file.path || file.name;
+            const isImage = file.type === 'Image';
+            const iconColor = isImage ? '#34C759' : '#FF3B30';
+            const hasExternalUrl = file.externalUrl;
+            const clickHandler = hasExternalUrl
+                ? `onclick="window.open('${file.externalUrl}', '_blank')"`
+                : `onclick="previewFile('${file.name.replace(/'/g, "\\'")}', '${filePath.replace(/'/g, "\\'")}', ${isImage})"`;
+
+            return `
+                <div class="file-card" ${clickHandler}>
+                    ${isImage ? `
+                        <div class="file-card-icon" style="overflow: hidden; border-radius: 8px;">
+                            <img src="${API_BASE}/api/files/${encodeURIComponent(filePath)}"
+                                 alt="${file.name}"
+                                 style="width: 100%; height: 64px; object-fit: cover;"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" style="display: none;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                        </div>
+                    ` : `
+                        <div class="file-card-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                        </div>
+                    `}
+                    <div class="file-card-name">${file.name}</div>
+                    <div class="file-card-size">${formatSize(file.size)}</div>
+                </div>
+            `;
+        }
+
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(0) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const diff = new Date() - date;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            if (days === 0) return 'Today';
+            if (days === 1) return 'Yesterday';
+            if (days < 7) return `${days} days ago`;
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function updateCounts() {
+            document.getElementById('all-count').textContent = fileStructure.all.length;
+            document.getElementById('analytics-count').textContent = fileStructure.analytics.length;
+            document.getElementById('social-count').textContent = fileStructure.social.length;
+            document.getElementById('email-count').textContent = fileStructure.email.length;
+            document.getElementById('ads-count').textContent = fileStructure.ads.length;
+            document.getElementById('universities-count').textContent = fileStructure.universities.length;
+            document.getElementById('brochures-count').textContent = fileStructure.brochures.length;
+            document.getElementById('reports-count').textContent = fileStructure.reports.length;
+        }
+
+        function setView(view) {
+            currentView = view;
+            document.getElementById('grid-btn').classList.toggle('active', view === 'grid');
+            document.getElementById('list-btn').classList.toggle('active', view === 'list');
+            renderFiles();
+        }
+
+        function searchFiles() {
+            renderFiles();
+        }
+
+        function previewFile(filename, filepath, isImage = false) {
+            const modal = document.getElementById('pdf-modal');
+            const title = document.getElementById('pdf-title');
+            const viewer = document.getElementById('pdf-viewer');
+
+            title.textContent = filename;
+            const filePath = filepath || filename;
+            const fileUrl = `${API_BASE}/api/files/${encodeURIComponent(filePath)}`;
+
+            if (isImage) {
+                // For images, replace iframe with img tag
+                viewer.outerHTML = `<img id="pdf-viewer" class="pdf-viewer" src="${fileUrl}" alt="${filename}" style="max-width: 100%; height: auto; object-fit: contain;">`;
+            } else {
+                // For PDFs, use iframe
+                if (viewer.tagName !== 'IFRAME') {
+                    viewer.outerHTML = `<iframe id="pdf-viewer" class="pdf-viewer" src=""></iframe>`;
+                }
+                document.getElementById('pdf-viewer').src = fileUrl;
+            }
+
+            modal.classList.add('show');
+        }
+
+        function closePdfModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            const modal = document.getElementById('pdf-modal');
+            const viewer = document.getElementById('pdf-viewer');
+
+            modal.classList.remove('show');
+
+            // Clear the source
+            if (viewer.tagName === 'IFRAME') {
+                viewer.src = '';
+            } else if (viewer.tagName === 'IMG') {
+                viewer.src = '';
+            }
+        }
+
+        function toggleSidebar() {
+            document.getElementById('ios-sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('show');
+        }
+
+        window.addEventListener('DOMContentLoaded', loadFiles);
+    </script>
+
+    <script src="theme.js"></script>
+
+    <!-- Bottom Navigation - Mobile Only -->
+    <nav class="bottom-nav" style="position: fixed; bottom: 0; left: 0; right: 0; height: 68px; background: var(--glass-bg-solid); backdrop-filter: saturate(180%) blur(20px); border-top: 0.33px solid var(--ios-separator); z-index: 100; display: none;">
+        <div style="display: flex; justify-content: space-around; align-items: center; height: 100%;">
+            <a href="elegant-bento.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; text-decoration: none; color: var(--ios-secondary);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                <span style="font-size: 10px; font-weight: 500;">Dashboard</span>
+            </a>
+            <a href="social-posts.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; text-decoration: none; color: var(--ios-secondary);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <rect x="2" y="2" width="20" height="20" rx="5"/>
+                    <circle cx="12" cy="12" r="4"/>
+                </svg>
+                <span style="font-size: 10px; font-weight: 500;">Social</span>
+            </a>
+            <a href="digital-ads.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; text-decoration: none; color: var(--ios-secondary);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+                    <line x1="7" y1="2" x2="7" y2="22"/>
+                    <line x1="17" y1="2" x2="17" y2="22"/>
+                </svg>
+                <span style="font-size: 10px; font-weight: 500;">Ads</span>
+            </a>
+            <a href="email-marketing.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; text-decoration: none; color: var(--ios-secondary);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span style="font-size: 10px; font-weight: 500;">Email</span>
+            </a>
+            <a href="research-files.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; text-decoration: none; color: var(--ios-blue);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                    <polyline points="13 2 13 9 20 9"/>
+                </svg>
+                <span style="font-size: 10px; font-weight: 500;">Files</span>
+            </a>
+        </div>
+    </nav>
+
+    <style>
+        @media (max-width: 768px) {
+            .bottom-nav {
+                display: block !important;
+            }
+            .ios-container {
+                height: calc(100vh - 88px - 68px) !important;
+            }
+        }
+    </style>
+
+</body>
+</html>
