@@ -564,9 +564,121 @@
             }
         }
 
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .modal-content {
+            background: var(--ios-card);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            transform: scale(0.9);
+            animation: scaleIn 0.3s 0.1s forwards;
+        }
+
+        @keyframes scaleIn {
+            to { transform: scale(1); }
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--ios-blue), var(--ios-teal));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .modal-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .modal-btn {
+            background: var(--ios-blue);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+        }
+
+        .modal-hidden {
+            display: none;
+        }
+
     </style>
 </head>
 <body>
+    <!-- Modal Prototype Notice -->
+    <div class="modal-overlay" id="prototypeModal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+            </div>
+            <h2 class="modal-title">Prototype Page</h2>
+            <p class="modal-text">
+                This Content Moderation page is just a prototype to showcase the system's capabilities. If you're interested in this functionality, we can fully develop it. Otherwise, feel free to explore the other dashboard sections.
+            </p>
+            <button class="modal-btn" onclick="closeModal()">Got it</button>
+        </div>
+    </div>
+
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
     
     <aside class="ios-sidebar" id="ios-sidebar">
@@ -1021,7 +1133,22 @@
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
+
+            // Show modal only once
+            const hasSeenModal = localStorage.getItem('moderation_modal_seen');
+            if (!hasSeenModal) {
+                document.getElementById('prototypeModal').classList.add('show');
+            }
         });
+
+        function closeModal() {
+            const modal = document.getElementById('prototypeModal');
+            modal.style.animation = 'fadeOut 0.3s forwards';
+            setTimeout(() => {
+                modal.classList.remove('show');
+                localStorage.setItem('moderation_modal_seen', 'true');
+            }, 300);
+        }
     </script>
     
     <script src="theme.js"></script>
