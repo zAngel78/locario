@@ -42,33 +42,37 @@
         /* Compliance Score Circle */
         .score-circle {
             position: relative;
-            width: 200px;
-            height: 200px;
+            width: 240px;
+            height: 240px;
             margin: 0 auto 24px;
         }
         
         .score-ring {
             transform: rotate(-90deg);
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
         
         .score-ring-bg {
             fill: none;
             stroke: var(--ios-grouped-bg);
-            stroke-width: 16;
+            stroke-width: 12;
         }
         
         .score-ring-fill {
             fill: none;
             stroke: var(--ios-green);
-            stroke-width: 16;
+            stroke-width: 12;
             stroke-linecap: round;
-            stroke-dasharray: 502;
-            stroke-dashoffset: 502;
+            stroke-dasharray: 628;
+            stroke-dashoffset: 628;
             animation: fillRing 2s ease-out forwards;
         }
         
         @keyframes fillRing {
-            to { stroke-dashoffset: calc(502 - (502 * var(--score)) / 100); }
+            to { stroke-dashoffset: calc(628 - (628 * var(--score)) / 100); }
         }
         
         .score-text {
@@ -77,20 +81,23 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
+            z-index: 10;
+            pointer-events: none;
+            width: 100%;
         }
         
         .score-number {
-            font-size: 56px;
+            font-size: 52px;
             font-weight: 900;
-            line-height: 1;
+            line-height: 1.1;
             color: var(--ios-green);
         }
         
         .score-label {
-            font-size: 13px;
-            color: var(--text-tertiary);
+            font-size: 12px;
+            color: var(--ios-secondary);
             font-weight: 600;
-            margin-top: 4px;
+            margin-top: 6px;
         }
 
         /* Compliance Items */
@@ -742,9 +749,9 @@
                     <h2 style="font-size: 28px; font-weight: 900; margin-bottom: 32px;">Overall Compliance Score</h2>
                     
                     <div class="score-circle" style="--score: 97">
-                        <svg class="score-ring" width="200" height="200">
-                            <circle class="score-ring-bg" cx="100" cy="100" r="80"/>
-                            <circle class="score-ring-fill" cx="100" cy="100" r="80"/>
+                        <svg class="score-ring" width="240" height="240">
+                            <circle class="score-ring-bg" cx="120" cy="120" r="100"/>
+                            <circle class="score-ring-fill" cx="120" cy="120" r="100"/>
                         </svg>
                         <div class="score-text">
                             <div class="score-number">97.2%</div>
@@ -1037,12 +1044,12 @@
                         </svg>
                     </div>
                     <div class="timeline-content">
-                        <div class="timeline-title">Fall 2025 Campaign</div>
-                        <div class="timeline-desc">Comprehensive review of all campaign materials</div>
+                        <div class="timeline-title">Instagram Content Review</div>
+                        <div class="timeline-desc">2,847 posts reviewed for cultural sensitivity</div>
                         <div class="timeline-meta">
-                            <span>📅 Oct 28, 2025</span>
-                            <span>👤 Sarah Cohen</span>
-                            <span class="timeline-badge badge-approved">Approved</span>
+                            <span>📅 Nov 2, 2025</span>
+                            <span>👤 Compliance Team</span>
+                            <span class="timeline-badge badge-approved">97.2% Pass</span>
                         </div>
                     </div>
                 </div>
@@ -1054,46 +1061,28 @@
                         </svg>
                     </div>
                     <div class="timeline-content">
-                        <div class="timeline-title">Admissions Materials</div>
-                        <div class="timeline-desc">Video content and brochure photography</div>
+                        <div class="timeline-title">Facebook Posts Audit</div>
+                        <div class="timeline-desc">50 posts verified for modesty guidelines</div>
                         <div class="timeline-meta">
-                            <span>📅 Oct 25, 2025</span>
-                            <span>👤 David Levy</span>
-                            <span class="timeline-badge badge-approved">Approved</span>
+                            <span>📅 Nov 1, 2025</span>
+                            <span>👤 Content Review</span>
+                            <span class="timeline-badge badge-approved">100% Compliant</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="timeline-item">
-                    <div class="timeline-icon pending">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <polyline points="12 6 12 12 16 14"/>
+                    <div class="timeline-icon approved">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12"/>
                         </svg>
                     </div>
                     <div class="timeline-content">
-                        <div class="timeline-title">Website Accessibility Audit</div>
-                        <div class="timeline-desc">WCAG 2.1 compliance review in progress</div>
+                        <div class="timeline-title">Meta Ads Campaign Review</div>
+                        <div class="timeline-desc">21 active ads checked for compliance</div>
                         <div class="timeline-meta">
                             <span>📅 Oct 30, 2025</span>
-                            <span>👤 Rachel Klein</span>
-                            <span class="timeline-badge badge-pending">In Progress</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-icon approved">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                    </div>
-                    <div class="timeline-content">
-                        <div class="timeline-title">Alumni Newsletter</div>
-                        <div class="timeline-desc">Monthly publication content review</div>
-                        <div class="timeline-meta">
-                            <span>📅 Oct 22, 2025</span>
-                            <span>👤 Michael Green</span>
+                            <span>👤 Marketing Team</span>
                             <span class="timeline-badge badge-approved">Approved</span>
                         </div>
                     </div>
@@ -1106,11 +1095,28 @@
                         </svg>
                     </div>
                     <div class="timeline-content">
-                        <div class="timeline-title">Social Media Guidelines Update</div>
-                        <div class="timeline-desc">New policy documentation and training</div>
+                        <div class="timeline-title">YouTube Content Screening</div>
+                        <div class="timeline-desc">1,000+ videos reviewed for accessibility</div>
                         <div class="timeline-meta">
-                            <span>📅 Oct 20, 2025</span>
-                            <span>👤 Sarah Cohen</span>
+                            <span>📅 Oct 28, 2025</span>
+                            <span>👤 Media Team</span>
+                            <span class="timeline-badge badge-approved">95% Pass</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-icon approved">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Email Marketing Compliance</div>
+                        <div class="timeline-desc">Alumni newsletter (70K+ recipients) verified</div>
+                        <div class="timeline-meta">
+                            <span>📅 Oct 25, 2025</span>
+                            <span>👤 Communications</span>
                             <span class="timeline-badge badge-approved">Approved</span>
                         </div>
                     </div>
@@ -1232,16 +1238,6 @@
                             <h4 style="font-size: 16px; font-weight: 700; color: var(--ios-green); margin-bottom: 4px;">All Clear</h4>
                             <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 0;">Privacy compliance, copyright verification, and language standards are all up to date.</p>
                         </div>
-                    </div>
-                </div>
-
-                <div style="margin-top: 24px; padding: 20px; background: var(--ios-grouped-bg); border-radius: 14px;">
-                    <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">Quick Actions</h4>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                        <button style="padding: 12px; background: var(--ios-blue); color: white; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;">Generate Report</button>
-                        <button style="padding: 12px; background: var(--bg-secondary); color: var(--text-primary); border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;">Export Data</button>
-                        <button style="padding: 12px; background: var(--bg-secondary); color: var(--text-primary); border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;">Schedule Audit</button>
-                        <button style="padding: 12px; background: var(--bg-secondary); color: var(--text-primary); border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;">View History</button>
                     </div>
                 </div>
             </div>
