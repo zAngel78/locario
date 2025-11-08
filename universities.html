@@ -53,7 +53,8 @@
         .university-card.nyu::before { background: linear-gradient(90deg, #9F7AEA 0%, #805AD5 100%); }
         .university-card.columbia::before { background: linear-gradient(90deg, #4299E1 0%, #3182CE 100%); }
         .university-card.brandeis::before { background: linear-gradient(90deg, #F6AD55 0%, #ED8936 100%); }
-        .university-card.touro::before { background: linear-gradient(90deg, #48BB78 0%, #38A169 100%); }
+        .university-card.maryland::before { background: linear-gradient(90deg, #DC2626 0%, #B91C1C 100%); }
+        .university-card.rutgers::before { background: linear-gradient(90deg, #DC2626 0%, #B91C1C 100%); }
 
         .university-header {
             display: flex;
@@ -326,7 +327,8 @@
         .quick-stat-card.nyu-stat::before { background: #805AD5; }
         .quick-stat-card.columbia-stat::before { background: #3182CE; }
         .quick-stat-card.brandeis-stat::before { background: #ED8936; }
-        .quick-stat-card.touro-stat::before { background: #38A169; }
+        .quick-stat-card.maryland-stat::before { background: #DC2626; }
+        .quick-stat-card.rutgers-stat::before { background: #DC2626; }
 
         .quick-stat-card:hover {
             transform: translateY(-4px);
@@ -633,9 +635,13 @@
                         <div class="quick-stat-label">Brandeis University</div>
                         <div class="quick-stat-value">25.0K</div>
                     </div>
-                    <div class="quick-stat-card touro-stat">
-                        <div class="quick-stat-label">Touro University</div>
-                        <div class="quick-stat-value">8.2K</div>
+                    <div class="quick-stat-card maryland-stat">
+                        <div class="quick-stat-label">Univ. of Maryland</div>
+                        <div class="quick-stat-value">58.0K</div>
+                    </div>
+                    <div class="quick-stat-card rutgers-stat">
+                        <div class="quick-stat-label">Rutgers University</div>
+                        <div class="quick-stat-value">44.0K</div>
                     </div>
                 </div>
             </div>
@@ -742,17 +748,30 @@
                     { text: 'Website', icon: 'globe', url: 'https://www.brandeis.edu' }
                 ]
             },
-            touro: {
-                name: 'Touro University',
-                badge: 'Challenger',
-                badgeClass: 'badge-challenger',
-                class: 'touro',
-                instagram: 8200,
-                engagement: 1.2,
-                alumni: 50000,
+            maryland: {
+                name: 'University of Maryland',
+                badge: 'Public Research',
+                badgeClass: 'badge-leader',
+                class: 'maryland',
+                instagram: 58000,
+                engagement: 2.1,
+                alumni: 377000,
                 links: [
-                    { text: 'Digital Ads', icon: 'ads', url: 'digital-ads.html#touro' },
-                    { text: 'Website', icon: 'globe', url: 'https://www.touro.edu' }
+                    { text: 'Digital Ads', icon: 'ads', url: 'digital-ads.html#maryland' },
+                    { text: 'Website', icon: 'globe', url: 'https://www.umd.edu' }
+                ]
+            },
+            rutgers: {
+                name: 'Rutgers University',
+                badge: 'Public Research',
+                badgeClass: 'badge-leader',
+                class: 'rutgers',
+                instagram: 44000,
+                engagement: 1.9,
+                alumni: 500000,
+                links: [
+                    { text: 'Digital Ads', icon: 'ads', url: 'digital-ads.html#rutgers' },
+                    { text: 'Website', icon: 'globe', url: 'https://www.rutgers.edu' }
                 ]
             }
         };
@@ -821,21 +840,21 @@
                 { name: 'Columbia', value: 457000 },
                 { name: 'Brandeis', value: 25000 },
                 { name: 'YU', value: 15400 },
-                { name: 'Touro', value: 8200 }
+                { name: 'UMD', value: 58000 }, { name: 'Rutgers', value: 44000 }
             ],
             engagement: [
                 { name: 'NYU', value: 3.2 },
                 { name: 'Columbia', value: 2.9 },
                 { name: 'Brandeis', value: 1.8 },
                 { name: 'YU', value: 1.5 },
-                { name: 'Touro', value: 1.2 }
+                { name: 'UMD', value: 2.1 }, { name: 'Rutgers', value: 1.9 }
             ],
             alumni: [
                 { name: 'Columbia', value: 150000 },
                 { name: 'NYU', value: 120000 },
                 { name: 'YU', value: 70000 },
                 { name: 'Brandeis', value: 60000 },
-                { name: 'Touro', value: 50000 }
+                { name: 'UMD', value: 58000 }, { name: 'Rutgers', value: 44000 }
             ]
         };
 
