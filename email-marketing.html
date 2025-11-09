@@ -582,8 +582,8 @@
                     "nyu": {"pdfs": 4, "emails": 7},
                     "brandeis": {"pdfs": 5, "emails": 6},
                     "columbia": {"pdfs": 5, "emails": 44},
-                    "maryland": {"pdfs": 0, "emails": 0},
-                    "rutgers": {"pdfs": 0, "emails": 0}
+                    "maryland": {"pdfs": 3, "emails": 2},
+                    "rutgers": {"pdfs": 3, "emails": 2}
                 }
             },
             "emails_by_university": {
@@ -636,15 +636,23 @@
                 },
                 "maryland": {
                     "name": "University of Maryland",
-                    "emails": ["admissions@umd.edu"],
-                    "sources": [],
-                    "pdfs": []
+                    "emails": ["registrar@umd.edu", "gradschool@umd.edu"],
+                    "sources": ["Registration Guide 2024-2025", "Doctoral Program Handbook 2024-2025", "Graduate School Policies 2023-2024"],
+                    "pdfs": [
+                        {"file": "https://www.registrar.umd.edu/sites/default/files/2024-03/reg-guide-2024-25.pdf", "title": "Registration Guide 2024-2025", "external": true},
+                        {"file": "https://ischool.umd.edu/wp-content/uploads/Doctoral-Program-Handbook-2024-2025-Final.pdf", "title": "Doctoral Program Handbook 2024-2025", "external": true},
+                        {"file": "https://gradschool.umd.edu/sites/default/files/2023-08/graduate-school-policies-combined-2023-2024.pdf", "title": "Graduate School Policies 2023-2024", "external": true}
+                    ]
                 },
                 "rutgers": {
                     "name": "Rutgers University",
-                    "emails": ["admissions@rutgers.edu"],
-                    "sources": [],
-                    "pdfs": []
+                    "emails": ["admissions@rutgers.edu", "sebs@rutgers.edu"],
+                    "sources": ["Fall 2024 Admissions Profile", "SEBS Admissions Brochure", "EOF Application Instructions 2024-2025"],
+                    "pdfs": [
+                        {"file": "https://admissions.rutgers.edu/sites/default/files/2024-08/2024%20Desk%20Reference%20Card-08072024_QR_0.pdf", "title": "Fall 2024 Admissions Profile", "external": true},
+                        {"file": "https://sebs.rutgers.edu/sites/default/files/2024-10/Rutgers-SEBS-Admissions-Brochure.pdf", "title": "SEBS Admissions Brochure", "external": true},
+                        {"file": "https://admissions.rutgers.edu/sites/default/files/2023-08/2024-2025_EOF_Instructions.pdf", "title": "EOF Application Instructions 2024-2025", "external": true}
+                    ]
                 }
             }
         };
@@ -1004,7 +1012,8 @@
             const viewer = document.getElementById('pdf-viewer');
 
             titleEl.textContent = title;
-            viewer.src = `pdfs/${pdfPath}`;
+            // Check if it's an external URL (starts with http)
+            viewer.src = pdfPath.startsWith('http') ? pdfPath : `pdfs/${pdfPath}`;
             modal.style.display = 'flex';
         }
 
